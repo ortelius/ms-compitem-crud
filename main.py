@@ -78,27 +78,63 @@ class CompItem(Resource):
 
 
 
-    def delete(cls):  # completed but an issue of props table
+    def delete(cls):  # completed
         try:
             comp_id = request.args.get('comp_id')
+            #comp_item_id = request.args.get('comp_item_id')
             cursor = conn.cursor()
-            sql = "DELETE from dm.dm_componentitem where compid=" + comp_id
-            print (sql)
+            sql = "select id from dm.dm_componentitem where compid = " + comp_id
+            t = tuple()
+            l = []
             cursor.execute(sql)
-            rows_deleted = cursor.rowcount
+            row = cursor.fetchone()
+            while row:
+                print (row)
+                l = list(t)
+                l.append(row[0])
+                t = tuple(l)
+                row = cursor.fetchone()
+
+            sql1 = "DELETE from dm.dm_compitemprops where compitemid in " + str(t)
+            sql2 = "DELETE from dm.dm_componentitem where compid=" + comp_id
+            rows_deleted = 0
+            with conn.cursor() as cursor:
+                cursor.execute(sql1)
+                cursor.execute(sql2)
+                rows_deleted = cursor.rowcount
             # Commit the changes to the database
             conn.commit()
             return rows_deleted
         except Exception as err:
             print(err)
+            return err
+
+    def put(cls):  # not completed
+        try:
+            input = request.get_json();
+            data_list = []
+            # for i in input:
+            #     d = (i['id'], i['compid'], i['status'], i['buildid'], i['buildurl'], i['dockersha'], i['dockertag'], i['gitcommit'], i['gitrepo'], i['giturl']) # this will be changed
+            #     data_list.append(d)
+
+            # print (data_list)
+            # cursor = conn.cursor()
+            # # execute the INSERT statement
+            # records_list_template = ','.join(['%s'] * len(data_list))
+            # sql = 'INSERT INTO dm.dm_componentitem(id, compid, status, buildid, buildurl, dockersha, dockertag, gitcommit, gitrepo, giturl) \
+            #     VALUES {}'.format(records_list_template)
+            cursor.execute(sql, data_list)
+            # commit the changes to the database
+            rows_inserted = cursor.rowcount
+            # Commit the changes to the database
+            conn.commit()
+            return rows_inserted;
+
+        except Exception as err:
+            print(err)
             cursor = conn.cursor()
             cursor.execute("ROLLBACK")
             conn.commit() 
-    
-    def put(cls):  # not completed 
-        input = request.get_json();
-        print (input)        
-        return "hello put" 
 ##
 # Actually setup the Api resource routing here
 ##
