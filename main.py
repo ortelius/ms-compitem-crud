@@ -1,8 +1,13 @@
+import json
 import os
+from pprint import pprint
 
 import psycopg2
+import psycopg2.extras
+import requests
 from flask import Flask, request
 from flask_restful import Api, Resource
+from collections import OrderedDict
 
 # Init Flask
 app = Flask(__name__)
@@ -14,41 +19,51 @@ db_name = os.getenv("DB_NAME", "postgres")
 db_user = os.getenv("DB_USER", "postgres")
 db_pass = os.getenv("DB_PASS", "postgres")
 db_port = os.getenv("DB_PORT", "5432")
+validateuser_url = os.getenv("VALIDATEUSER_URL", "http://localhost:5000")
 
 conn = psycopg2.connect(host=db_host, database=db_name, user=db_user, password=db_pass, port=db_port)
 
-class CompItem(Resource):  
+class CompItem(Resource):
+
     @classmethod
-    def get(cls):  # completed
-        try: 
-            comp_id = request.args.get('comp_id')
-            cursor = conn.cursor()
-            sql = "select * from dm.dm_componentitem where compid = " + comp_id
-            result = []
-            cursor.execute(sql)
-            row = cursor.fetchone()
-            while row:
-                # new items needs to be added here
-                cols = {}
-                cols['id'] = row[0]
-                cols['compid'] = row[1]
-                cols['buildid'] = row[17]
-                cols['buildurl'] = row[18]
-                cols['dockersha'] = row[22]
-                cols['dockertag'] = row[30]
-                cols['gitcommit'] = row[23]
-                cols['gitrepo'] = row[24]
-                cols['giturl'] = row[26]
+    def get(cls):
 
-                result.append(cols)
-                row = cursor.fetchone()
+        pprint(request.cookies)
+        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
+        if (result is None):
+            return None, 404
 
+        if (result.status_code != 200):
+            return result.json(), 404
+
+        try:
+            compitemid = request.args.get('compitemid',"-1")
+            cursor = conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+            sql = """select compid, id, name, rollup, rollback, repositoryid, target, xpos, ypos,
+                     kind, buildid, buildurl, chart, operator, builddate, dockersha, gitcommit,
+                     gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
+                     chartrepourl, serviceowner, serviceowneremail, serviceownerphone, 
+                     slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
+                     from dm.dm_componentitem where id = %s"""
+
+            params = (compitemid,)    
+            cursor.execute(sql, params)
+            result = cursor.fetchall()
+            if (not result):
+                result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), ('rollup', None), ('rollback', None), ('repositoryid', None), 
+                                       ('target', None), ('xpos', None), ('ypos', None),  ('kind', None), ('buildid', None), ('buildurl', None), 
+                                       ('chart', None), ('operator', None), ('builddate', None), ('dockersha', None), ('gitcommit', None),
+                                       ('gitrepo', None), ('gittag', None), ('giturl', None), ('chartversion', None), ('chartnamespace', None), ('dockertag', None), ('chartrepo', None),
+                                       ('chartrepourl', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None), 
+                                       ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None)])]
+
+            print(result)
             return result
         except Exception as err:
             print(err)
             return err
- 
 
+    @classmethod
     def post(cls):  # completed
         try: 
             input = request.get_json();
@@ -68,17 +83,17 @@ class CompItem(Resource):
             rows_inserted = cursor.rowcount
             # Commit the changes to the database
             conn.commit()
-            return rows_inserted;
+            return rows_inserted
 
         except Exception as err:
             print(err)
             cursor = conn.cursor()
             cursor.execute("ROLLBACK")
-            conn.commit() 
+            conn.commit()
+            return err
 
-
-
-    def delete(cls):  # completed
+    @classmethod
+    def delete(cls):
         try:
             comp_id = request.args.get('comp_id')
             #comp_item_id = request.args.get('comp_item_id')
@@ -109,6 +124,7 @@ class CompItem(Resource):
             print(err)
             return err
 
+    @classmethod
     def put(cls):  # not completed
         try:
             input = request.get_json();
@@ -118,7 +134,7 @@ class CompItem(Resource):
             #     data_list.append(d)
 
             # print (data_list)
-            # cursor = conn.cursor()
+            cursor = conn.cursor()
             # # execute the INSERT statement
             # records_list_template = ','.join(['%s'] * len(data_list))
             # sql = 'INSERT INTO dm.dm_componentitem(id, compid, status, buildid, buildurl, dockersha, dockertag, gitcommit, gitrepo, giturl) \
@@ -128,17 +144,18 @@ class CompItem(Resource):
             rows_inserted = cursor.rowcount
             # Commit the changes to the database
             conn.commit()
-            return rows_inserted;
+            return rows_inserted
 
         except Exception as err:
             print(err)
             cursor = conn.cursor()
             cursor.execute("ROLLBACK")
-            conn.commit() 
+            conn.commit()
+            return err 
 ##
 # Actually setup the Api resource routing here
 ##
 api.add_resource(CompItem, '/msapi/compitem')
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5001)
