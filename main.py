@@ -37,7 +37,6 @@ class CompItem(Resource):
     @classmethod
     def get(cls):
 
-        pprint(request.cookies)
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
             return None, 404
@@ -77,7 +76,6 @@ class CompItem(Resource):
     def post(cls):  # completed
         try:
             
-            pprint(request.cookies)
             result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
             
             if (result is None):
@@ -117,7 +115,6 @@ class CompItem(Resource):
     @classmethod
     def delete(cls):
         try:
-            pprint(request.cookies)
             result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
             if (result is None):
                 return None, 404
@@ -159,7 +156,6 @@ class CompItem(Resource):
     def put(cls):  # not completed
         try:
             
-            pprint(request.cookies)
             result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
             if (result is None):
                 return None, 404
