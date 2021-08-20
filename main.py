@@ -1,8 +1,8 @@
 import json
 import os
-from pprint import pprint
 
 import psycopg2
+import pybreaker
 import psycopg2.extras
 import requests
 from flask import Flask, request
@@ -21,23 +21,31 @@ db_pass = os.getenv("DB_PASS", "postgres")
 db_port = os.getenv("DB_PORT", "5432")
 validateuser_url = os.getenv("VALIDATEUSER_URL", "http://localhost:5000")
 
-conn = psycopg2.connect(host=db_host, database=db_name, user=db_user, password=db_pass, port=db_port)
+conn_circuit_breaker = pybreaker.CircuitBreaker(
+    fail_max=1,
+    reset_timeout=10,
+)
+
+@conn_circuit_breaker
+def create_conn():
+    conn = psycopg2.connect(host=db_host, database=db_name, user=db_user, password=db_pass, port=db_port)
+    return conn
 
 class CompItem(Resource):
 
     @classmethod
     def get(cls):
 
-        pprint(request.cookies)
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
             return None, 404
 
         if (result.status_code != 200):
             return result.json(), 404
-
+        
         try:
             compitemid = request.args.get('compitemid',"-1")
+            conn = create_conn()
             cursor = conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
             sql = """select compid, id, name, rollup, rollback, repositoryid, target, xpos, ypos,
                      kind, buildid, buildurl, chart, operator, builddate, dockersha, gitcommit,
@@ -65,7 +73,16 @@ class CompItem(Resource):
 
     @classmethod
     def post(cls):  # completed
-        try: 
+        try:
+            
+            result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
+            
+            if (result is None):
+                    return None, 404
+
+            if (result.status_code != 200):
+                return result.json(), 404
+        
             input = request.get_json();
             data_list = []
             for i in input:
@@ -73,6 +90,7 @@ class CompItem(Resource):
                 data_list.append(d)
 
             print (data_list) 
+            conn = create_conn() 
             cursor = conn.cursor()
             # execute the INSERT statement
             records_list_template = ','.join(['%s'] * len(data_list))
@@ -87,6 +105,7 @@ class CompItem(Resource):
 
         except Exception as err:
             print(err)
+            conn = create_conn() 
             cursor = conn.cursor()
             cursor.execute("ROLLBACK")
             conn.commit()
@@ -95,8 +114,16 @@ class CompItem(Resource):
     @classmethod
     def delete(cls):
         try:
+            result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
+            if (result is None):
+                return None, 404
+    
+            if (result.status_code != 200):
+                return result.json(), 404
+        
             comp_id = request.args.get('comp_id')
             #comp_item_id = request.args.get('comp_item_id')
+            conn = create_conn() 
             cursor = conn.cursor()
             sql = "select id from dm.dm_componentitem where compid = " + comp_id
             t = tuple()
@@ -127,6 +154,14 @@ class CompItem(Resource):
     @classmethod
     def put(cls):  # not completed
         try:
+            
+            result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
+            if (result is None):
+                return None, 404
+    
+            if (result.status_code != 200):
+                return result.json(), 404
+        
             input = request.get_json();
             data_list = []
             # for i in input:
@@ -134,6 +169,7 @@ class CompItem(Resource):
             #     data_list.append(d)
 
             # print (data_list)
+            conn = create_conn() 
             cursor = conn.cursor()
             # # execute the INSERT statement
             # records_list_template = ','.join(['%s'] * len(data_list))
@@ -148,10 +184,12 @@ class CompItem(Resource):
 
         except Exception as err:
             print(err)
+            conn = create_conn() 
             cursor = conn.cursor()
             cursor.execute("ROLLBACK")
             conn.commit()
             return err 
+        
 ##
 # Actually setup the Api resource routing here
 ##
