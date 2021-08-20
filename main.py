@@ -1,6 +1,5 @@
 import json
 import os
-from pprint import pprint
 
 import psycopg2
 import pybreaker
