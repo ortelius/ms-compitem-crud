@@ -1,11 +1,14 @@
 aniso8601==9.0.1
 click==7.1.2
+Flask-RESTful==0.3.9
+flask-swagger-ui==3.36.0
 Flask==1.1.2
-Flask-RESTful==0.3.8
 itsdangerous==1.1.0
 Jinja2==2.11.3
 MarkupSafe==1.1.1
-psycopg2-binary==2.8.6
+# psycopg2==2.8.6 - built and installed on the fly in the docker build
+pybreaker==0.6.0
 pytz==2021.1
 six==1.15.0
-Werkzeug==1.0.1
+sqlalchemy==1.4.22
+webargs==8.0.1
