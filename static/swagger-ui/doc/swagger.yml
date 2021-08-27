@@ -1,0 +1,177 @@
+openapi: 3.0.1
+info:
+  title: ortelius-ms-compitem-crud
+  version: 1.0.0
+  description: This service will retrieve and delete component items and the component item properties.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: steve@deployhub.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: /
+paths:
+  "/msapi/compitem":
+    get:
+      tags:
+      - compitem
+      summary: Retrieves the component item and component item properties for the compitemid.
+      operationId: getCompItem
+      parameters:
+      - name: compitemid
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/CompItem"
+              example: 
+                '[{
+                    "compid": 2447,
+                    "id": 5291,
+                    "name": "authentication-service;develop;v9_0_0_62_g75d73df item 1",
+                    "rollup": null,
+                    "rollback": null,
+                    "repositoryid": null,
+                    "target": null,
+                    "xpos": 100,
+                    "ypos": 100,
+                    "kind": "docker",
+                    "buildid": "",
+                    "buildurl": "",
+                    "chart": null,
+                    "operator": null,
+                    "builddate": "Thu Aug 12 14:12:12 2021",
+                    "dockersha": null,
+                    "gitcommit": "",
+                    "gitrepo": "ortelius/authentication-service",
+                    "gittag": "",
+                    "giturl": "",
+                    "chartversion": null,
+                    "chartnamespace": null,
+                    "dockertag": null,
+                    "chartrepo": null,
+                    "chartrepourl": null,
+                    "serviceowner": null,
+                    "serviceowneremail": null,
+                    "serviceownerphone": null,
+                    "slackchannel": null,
+                    "discordchannel": null,
+                    "hipchatchannel": null,
+                    "pagerdutyurl": null,
+                    "pagerdutybusinessurl": null
+                  }]'
+    delete:
+      tags:
+      - compitem
+      summary: Deletes all of the component items and component item properties for the Component (compid).
+      operationId: deleteCompItem
+      parameters:
+      - name: compid
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example: 
+                '{"message": "components updated succesfully"}'
+components:
+  schemas:
+    CompItem:
+      type: object
+      properties:
+        compid:
+          type: integer
+          format: int32
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        rollup:
+          type: string
+        rollback:
+          type: string
+        repositoryid:
+          type: integer
+          format: int32
+        target:
+          type: integer
+          format: int32
+        xpos:
+          type: integer
+          format: int32
+        ypos:
+          type: integer
+          format: int32 
+        kind:
+          type: string
+        buildid:
+          type: string
+        buildurl:
+          type: string                                                 
+        chart:
+          type: string
+        operator:
+          type: string
+        builddate:
+          type: string  
+        dockersha:
+          type: string
+        gitcommit:
+          type: string                                                 
+        gitrepo:
+          type: string
+        gittag:
+          type: string
+        giturl:
+          type: string  
+        chartversion:
+          type: string  
+        chartnamespace:
+          type: string
+        dockertag:
+          type: string                                                 
+        chartrepo:
+          type: string
+        chartrepourl:
+          type: string
+        serviceowner:
+          type: string 
+        serviceowneremail:
+          type: string                                                 
+        serviceownerphone:
+          type: string
+        slackchannel:
+          type: string
+        discordchannel:
+          type: string 
+        hipchatchannel:
+          type: string
+        pagerdutyurl:
+          type: string
+        pagerdutybusinessurl:
+          type: string   
+  
