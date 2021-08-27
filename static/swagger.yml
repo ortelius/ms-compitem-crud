@@ -37,42 +37,6 @@ paths:
                 type: array
                 items:
                   "$ref": "#/components/schemas/CompItem"
-              example: 
-                '[{
-                    "compid": 2447,
-                    "id": 5291,
-                    "name": "authentication-service;develop;v9_0_0_62_g75d73df item 1",
-                    "rollup": null,
-                    "rollback": null,
-                    "repositoryid": null,
-                    "target": null,
-                    "xpos": 100,
-                    "ypos": 100,
-                    "kind": "docker",
-                    "buildid": "",
-                    "buildurl": "",
-                    "chart": null,
-                    "operator": null,
-                    "builddate": "Thu Aug 12 14:12:12 2021",
-                    "dockersha": null,
-                    "gitcommit": "",
-                    "gitrepo": "ortelius/authentication-service",
-                    "gittag": "",
-                    "giturl": "",
-                    "chartversion": null,
-                    "chartnamespace": null,
-                    "dockertag": null,
-                    "chartrepo": null,
-                    "chartrepourl": null,
-                    "serviceowner": null,
-                    "serviceowneremail": null,
-                    "serviceownerphone": null,
-                    "slackchannel": null,
-                    "discordchannel": null,
-                    "hipchatchannel": null,
-                    "pagerdutyurl": null,
-                    "pagerdutybusinessurl": null
-                  }]'
     delete:
       tags:
       - compitem
@@ -95,8 +59,7 @@ paths:
                 properties:
                   message:
                     type: string
-              example: 
-                '{"message": "components updated succesfully"}'
+                    example: "components updated succesfully"
 components:
   schemas:
     CompItem:
@@ -174,4 +137,37 @@ components:
           type: string
         pagerdutybusinessurl:
           type: string   
-  
+      example: 
+        compid: 2447
+        id: 5291
+        name: "authentication-service;develop;v9_0_0_62_g75d73df item 1"
+        rollup: null
+        rollback: null
+        repositoryid: null
+        target: null
+        xpos: 100
+        ypos: 100
+        kind: "docker"
+        buildid: ""
+        buildurl: ""
+        chart: null
+        operator: null
+        builddate: "Thu Aug 12 14:12:12 2021"
+        dockersha: null
+        gitcommit: ""
+        gitrepo: "ortelius/authentication-service"
+        gittag: ""
+        giturl: ""
+        chartversion: null
+        chartnamespace: null
+        dockertag: null
+        chartrepo: null
+        chartrepourl: null
+        serviceowner: null
+        serviceowneremail: null
+        serviceownerphone: null
+        slackchannel: null,
+        discordchannel: null
+        hipchatchannel: null
+        pagerdutyurl: null
+        pagerdutybusinessurl: null
