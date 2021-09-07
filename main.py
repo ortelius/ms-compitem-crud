@@ -1,47 +1,22 @@
 import os
 from collections import OrderedDict
-from http import HTTPStatus
 
+import uvicorn
 import psycopg2
 import psycopg2.extras
-import pybreaker
 import requests
-import sqlalchemy.pool as pool
-from flask import Flask, request, send_from_directory
-from flask_restful import Api, Resource
-from flask_swagger_ui import get_swaggerui_blueprint
-from webargs import fields, validate
-from webargs.flaskparser import abort, parser
+from sqlalchemy import create_engine
+from fastapi import FastAPI, Request, Response, HTTPException, status
+from pydantic import BaseModel
+from typing import List, Optional
 
+# Init Globals
+service_name = 'ortelius-ms-compitem-crud'
 
-#pylint: disable=unused-argument
-@parser.error_handler
-def handle_request_parsing_error(err, req, schema, *, error_status_code, error_headers):
-    abort(HTTPStatus.BAD_REQUEST, errors=err.messages)
-
-
-# Init Flask
-app = Flask(__name__)
-api = Api(app)
-app.url_map.strict_slashes = False
-
-
-@app.route('/static/<path:path>')
-def send_static(path):
-    return send_from_directory('static', path)
-
-
-# swagger config
-SWAGGER_URL = '/swagger'
-API_URL = '/static/swagger.yml'
-SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        'app_name': "ortelius-ms-compitem-crud"
-    }
-)
-app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+app = FastAPI(
+    title=service_name,
+    description=service_name
+    )
 
 # Init db connection
 db_host = os.getenv("DB_HOST", "localhost")
@@ -51,112 +26,215 @@ db_pass = os.getenv("DB_PASS", "postgres")
 db_port = os.getenv("DB_PORT", "5432")
 validateuser_url = os.getenv("VALIDATEUSER_URL", "http://localhost:5000")
 
-# connection pool config
-conn_pool_size = int(os.getenv("POOL_SIZE", "3"))
-conn_pool_max_overflow = int(os.getenv("POOL_MAX_OVERFLOW", "2"))
-conn_pool_timeout = float(os.getenv("POOL_TIMEOUT", "30.0"))
-conn_circuit_breaker = pybreaker.CircuitBreaker(
-    fail_max=1,
-    reset_timeout=10
-)
-
-
-@conn_circuit_breaker
-def create_conn():
-    conn = psycopg2.connect(host=db_host, database=db_name, user=db_user, password=db_pass, port=db_port)
-    return conn
-
-
-# connection pool init
-mypool = pool.QueuePool(create_conn, max_overflow=conn_pool_max_overflow, pool_size=conn_pool_size, timeout=conn_pool_timeout)
+engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host +":"+ db_port + "/" + db_name)
 
 # health check endpoint
-
-
-class HealthCheck(Resource):
-    def get(self):
-        try:
-            conn = mypool.connect()
+class StatusMsg(BaseModel):
+    status: str
+    service_name: Optional[str] = None
+    
+@app.get("/health",
+         responses={
+             503: {"model": StatusMsg,
+                   "description": "DOWN Status for the Service",
+                   "content": {
+                       "application/json": {
+                           "example": {"status": 'DOWN'}
+                       },
+                   },
+                   },
+             200: {"model": StatusMsg,
+                   "description": "UP Status for the Service",
+                   "content": {
+                       "application/json": {
+                           "example": {"status": 'UP', "service_name": service_name}
+                       }
+                   },
+                   },
+         }
+         )
+async def health(response: Response):
+    try:
+        with engine.connect() as connection:
+            conn = connection.connection
             cursor = conn.cursor()
             cursor.execute('SELECT 1')
-            conn.close()
             if cursor.rowcount > 0:
-                return ({"status": 'UP', "service_name": 'ortelius-ms-dep-pkg-cud'}), HTTPStatus.OK
-            return ({"status": 'DOWN'}), HTTPStatus.SERVICE_UNAVAILABLE
+                return {"status": 'UP', "service_name": service_name}
+            response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+            return {"status": 'DOWN'}
 
-        except Exception as err:
-            print(err)
-            return ({"status": 'DOWN'}), HTTPStatus.SERVICE_UNAVAILABLE
-
-
-api.add_resource(HealthCheck, '/health')
+    except Exception as err:
+        print(str(err))
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return {"status": 'DOWN'}
 # end health check
 
-
-class CompItem(Resource):
-
-    def get(self):
-
+class CompItemModel(BaseModel):
+    compid: int
+    id: int
+    repositoryid: Optional[int] = None
+    target: Optional[str] = None
+    name: Optional[str] = None
+    summary: Optional[str] = None
+    predecessorid: Optional[int] = None
+    xpos: Optional[int] = None
+    ypos: Optional[int] = None
+    creatorid: Optional[int] = None
+    created: Optional[int] = None
+    modifierid: Optional[int] = None
+    modified: Optional[int] = None
+    status: Optional[str] = None
+    rollup: Optional[int] = None
+    rollback: Optional[int] = None
+    kind: Optional[str] = None
+    buildid: Optional[str] = None
+    buildurl: Optional[str] = None
+    chart: Optional[str] = None
+    operator: Optional[str] = None
+    builddate: Optional[str] = None
+    dockersha: Optional[str] = None
+    gitcommit: Optional[str] = None
+    gitrepo: Optional[str] = None
+    gittag: Optional[str] = None
+    giturl: Optional[str] = None
+    dockerrepo: Optional[str] = None
+    chartversion: Optional[str] = None
+    chartnamespace: Optional[str] = None
+    dockertag: Optional[str] = None
+    chartrepo: Optional[str] = None
+    chartrepourl: Optional[str] = None
+    serviceowner: Optional[str] = None
+    serviceowneremail: Optional[str] = None
+    serviceownerphone: Optional[str] = None 
+    slackchannel: Optional[str] = None
+    discordchannel: Optional[str] = None
+    hipchatchannel: Optional[str] = None
+    pagerdutyurl: Optional[str] = None
+    pagerdutybusinessurl: Optional[str] = None
+     
+class CompItemModelList(BaseModel):
+    data: List[CompItemModel]
+    
+class Message(BaseModel):
+    detail: str
+    
+   
+@app.get('/msapi/compitem',
+        response_model=List[CompItemModel],
+        responses={
+             401: {"model": Message,
+                   "description": "Authorization Status",
+                   "content": {
+                       "application/json": {
+                           "example": {"detail": "Authorization failed"}
+                       },
+                   },
+                   },
+             500: {"model": Message,
+                   "description": "SQL Error",
+                   "content": {
+                       "application/json": {
+                           "example": {"detail": "SQL Error: 30x"}
+                       },
+                   },
+                    } #,
+             # 200: {
+             #     "description": "List of domain ids the user belongs to.",
+             #     "content": {
+             #         "application/json": {
+             #             "example": [1, 200, 201, 5033]
+             #         }
+             #     },
+             # },
+         }
+         )
+async def get_compitem(request: Request, compitemid:int):
+    try:
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
-            return None, HTTPStatus.UNAUTHORIZED
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
+    
+        if (result.status_code != status.HTTP_200_OK):
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+    except Exception as err:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
-        if (result.status_code != HTTPStatus.OK):
-            return result.json(), HTTPStatus.UNAUTHORIZED
-
-        query_args_validations = {
-            "compitemid": fields.Int(required=True, validate=validate.Range(min=1))
-        }
-
-        parser.parse(query_args_validations, request, location="query")
-
-        try:
-            compitemid = request.args.get('compitemid', "-1")
-            conn = mypool.connect()
+    try:
+        with engine.connect() as connection:
+            conn = connection.connection
+            authorized = False      # init to not authorized
             cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             sql = """select compid, id, name, rollup, rollback, repositoryid, target, xpos, ypos,
-                     kind, buildid, buildurl, chart, operator, builddate, dockersha, gitcommit,
-                     gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
-                     chartrepourl, serviceowner, serviceowneremail, serviceownerphone, 
-                     slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
-                     from dm.dm_componentitem where id = %s"""
-
-            params = (compitemid,)
+                        kind, buildid, buildurl, chart, operator, builddate, dockersha, gitcommit,
+                        gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
+                        chartrepourl, serviceowner, serviceowneremail, serviceownerphone, 
+                        slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
+                        from dm.dm_componentitem where id = %s"""
+    
+            params = (str(compitemid),)
             cursor.execute(sql, params)
             result = cursor.fetchall()
             if (not result):
                 result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), ('rollup', None), ('rollback', None), ('repositoryid', None),
-                                       ('target', None), ('xpos', None), ('ypos', None),  ('kind', None), ('buildid', None), ('buildurl', None),
-                                       ('chart', None), ('operator', None), ('builddate', None), ('dockersha', None), ('gitcommit', None),
-                                       ('gitrepo', None), ('gittag', None), ('giturl', None), ('chartversion', None), ('chartnamespace', None), ('dockertag', None), ('chartrepo', None),
-                                       ('chartrepourl', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
-                                       ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None)])]
+                                        ('target', None), ('xpos', None), ('ypos', None),  ('kind', None), ('buildid', None), ('buildurl', None),
+                                        ('chart', None), ('operator', None), ('builddate', None), ('dockersha', None), ('gitcommit', None),
+                                        ('gitrepo', None), ('gittag', None), ('giturl', None), ('chartversion', None), ('chartnamespace', None), ('dockertag', None), ('chartrepo', None),
+                                        ('chartrepourl', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
+                                        ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None)])]
             cursor.close()
             conn.close()
-            return result
-        except Exception as err:
-            print(err)
-            conn.rollback()
-            return ({"message": str(err)}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return result
+    
+    except HTTPException:
+        raise
+    except Exception as err:
+        print(err)
+        # conn.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
 # Not implemented fully.  SQL query is not complete
-    def post(self):
 
+@app.post("/msapi/compitem",
+         responses={
+             401: {"model": Message,
+                   "description": "Authorization Status",
+                   "content": {
+                       "application/json": {
+                           "example": {"detail": "Authorization failed"}
+                       },
+                   },
+                   },
+             500: {"model": Message,
+                   "description": "SQL Error",
+                   "content": {
+                       "application/json": {
+                           "example": {"detail": "SQL Error: 30x"}
+                       },
+                   },
+                }
+         }
+         )
+async def create_compitem(response: Response, request: Request, compItemList: List[CompItemModel]):
+
+    try:
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
-            return None, HTTPStatus.UNAUTHORIZED
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
+    
+        if (result.status_code != status.HTTP_200_OK):
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+    except Exception as err:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
-        if (result.status_code != HTTPStatus.OK):
-            return result.json(), HTTPStatus.UNAUTHORIZED
-
-        try:
-            data = request.get_json()
-            data_list = []
-            for col in data:
-                row = (col['id'], col['compid'], col['status'], col['buildid'], col['buildurl'], col['dockersha'], col['dockertag'], col['gitcommit'], col['gitrepo'], col['giturl'])  # this will be changed
-                data_list.append(row)
-
-            conn = mypool.connect()
+    try:
+        data_list = []
+        for col in compItemList:
+            row = (col.id, col.compid, col.status, col.buildid, col.buildurl, col.dockersha, col.dockertag, col.gitcommit, col.gitrepo, col.giturl)  # this will be changed
+            data_list.append(row)
+        
+        with engine.connect() as connection:
+            conn = connection.connection
             cursor = conn.cursor()
             # execute the INSERT statement
             records_list_template = ','.join(['%s'] * len(data_list))
@@ -168,100 +246,136 @@ class CompItem(Resource):
             # Commit the changes to the database
             conn.commit()
             conn.close()
-            if rows_inserted > 0:
-                return ({"message": 'components updated succesfully'}), HTTPStatus.CREATED
+            
+        if rows_inserted > 0:
+            response.status_code = status.HTTP_201_CREATED
+            return {"message": 'components created succesfully'}
+        
+        response.status_code = status.HTTP_200_OK
+        return {"message": 'components not created'}
 
-            return ({"message": 'components not updated'}), HTTPStatus.OK
+    except HTTPException:
+        raise
+    except Exception as err:
+        print(err)
+        # conn.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
-        except Exception as err:
-            print(err)
-            conn.rollback()
-            return ({"message": str(err)}), HTTPStatus.INTERNAL_SERVER_ERROR
+@app.delete("/msapi/compitem",
+         responses={
+             401: {"model": Message,
+                   "description": "Authorization Status",
+                   "content": {
+                       "application/json": {
+                           "example": {"detail": "Authorization failed"}
+                       },
+                   },
+                   },
+             500: {"model": Message,
+                   "description": "SQL Error",
+                   "content": {
+                       "application/json": {
+                           "example": {"detail": "SQL Error: 30x"}
+                       },
+                   },
+                }
+         }
+         )
+async def delete_compitem(request: Request, compid: int):
 
-    def delete(self):
-
+    try:
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
-            return None, HTTPStatus.UNAUTHORIZED
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
+    
+        if (result.status_code != status.HTTP_200_OK):
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+    except Exception as err:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
-        if (result.status_code != HTTPStatus.OK):
-            return result.json(), HTTPStatus.UNAUTHORIZED
-
-        query_args_validations = {
-            "compid": fields.Int(required=True, validate=validate.Range(min=1))
-        }
-
-        parser.parse(query_args_validations, request, location="query")
-
-        try:
-            compid = request.args.get('compid', "-1")
-            conn = create_conn()
+    try:
+        with engine.connect() as connection:
+            conn = connection.connection
             cursor = conn.cursor()
-
+    
             sql1 = "DELETE from dm.dm_compitemprops where compitemid in (select id from dm.dm_componentitem where compid = " + str(compid) + ")"
-            sql2 = "DELETE from dm.dm_componentitem where compid=" + compid
+            sql2 = "DELETE from dm.dm_componentitem where compid=" + str(compid)
             rows_deleted = 0
             cursor.execute(sql1)
             cursor.execute(sql2)
             rows_deleted = cursor.rowcount
             # Commit the changes to the database
             conn.commit()
-            if rows_deleted > 0:
-                return ({"message": 'components updated succesfully'}), HTTPStatus.OK
+    
+        # response.status_code = status.HTTP_200_OK
+        return {"message": 'component deleted succesfully'}
 
-            return ({"message": 'components not updated'}), HTTPStatus.OK
+    except HTTPException:
+        raise
+    except Exception as err:
+        print(err)
+        # conn.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
-        except Exception as err:
-            print(err)
-            conn.rollback()
-            return ({"message": str(err)}), HTTPStatus.INTERNAL_SERVER_ERROR
+@app.put("/msapi/compitem",
+         responses={
+             401: {"model": Message,
+                   "description": "Authorization Status",
+                   "content": {
+                       "application/json": {
+                           "example": {"detail": "Authorization failed"}
+                       },
+                   },
+                   },
+             500: {"model": Message,
+                   "description": "SQL Error",
+                   "content": {
+                       "application/json": {
+                           "example": {"detail": "SQL Error: 30x"}
+                       },
+                   },
+                }
+         }
+         )
+async def update_compitem(request: Request, compitemList: List[CompItemModel]):
 
-# Not implemented fully.  SQL query is not complete
-    def put(self):  # not completed
-
+    try:
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
-            return None, HTTPStatus.UNAUTHORIZED
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
+    
+        if (result.status_code != status.HTTP_200_OK):
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+    except Exception as err:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
-        if (result.status_code != HTTPStatus.OK):
-            return result.json(), HTTPStatus.UNAUTHORIZED
+    try:
+        data_list = []
+        for col in compitemList:
+            row = (col.compid, col.status, col.buildid, col.buildurl, col.dockersha, col.dockertag, col.gitcommit, col.gitrepo, col.giturl, col.id)  # this will be changed
+            data_list.append(row)
 
-        try:
-            conn = mypool.connect()
-            cursor = conn.cursor()
-
-            data = request.get_json()
-            data_list = []
-            for col in data:
-                row = (col['id'], col['compid'], col['status'], col['buildid'], col['buildurl'], col['dockersha'], col['dockertag'], col['gitcommit'], col['gitrepo'], col['giturl'])  # this will be changed
-                data_list.append(row)
-
-            # print (data_list)
-            conn = create_conn()
+        with engine.connect() as connection:
+            conn = connection.connection
             cursor = conn.cursor()
             # # execute the INSERT statement
-            records_list_template = ','.join(['%s'] * len(data_list))
-            sql = 'INSERT INTO dm.dm_componentitem(id, compid, status, buildid, buildurl, dockersha, dockertag, gitcommit, gitrepo, giturl) VALUES {}'.format(records_list_template)
-            cursor.execute(sql, data_list)
+            # records_list_template = ','.join(['%s'] * len(data_list))
+            sql = 'UPDATE dm.dm_componentitem set compid=%s, status=%s, buildid=%s, buildurl=%s, dockersha=%s, dockertag=%s, gitcommit=%s, gitrepo=%s, giturl=%s \
+            WHERE id = %s'
+            cursor.executemany(sql, data_list)
             # commit the changes to the database
             rows_inserted = cursor.rowcount
             # Commit the changes to the database
             conn.commit()
-            if rows_inserted > 0:
-                return ({"message": 'components updated succesfully'}), HTTPStatus.CREATED
+            
+        if rows_inserted > 0:
+            return {"message": 'components updated succesfully'}
+        
+        return {"message": 'components not updated'}
 
-            return ({"message": 'components not updated'}), HTTPStatus.OK
-
-        except Exception as err:
-            print(err)
-            conn.rollback()
-            return ({"message": str(err)}), HTTPStatus.INTERNAL_SERVER_ERROR
-
-
-##
-# Actually setup the Api resource routing here
-##
-api.add_resource(CompItem, '/msapi/compitem')
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5001)
+    except Exception as err:
+        print(err)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
+    
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
