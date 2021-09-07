@@ -1,4 +1,4 @@
-FROM quay.io/ortelius/ms-python-base:flask-1.1
+FROM quay.io/ortelius/ms-python-base:fastapi-1.0 as base
 
 ENV DB_HOST localhost
 ENV DB_NAME postgres
