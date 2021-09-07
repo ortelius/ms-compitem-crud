@@ -6,8 +6,7 @@ import psycopg2
 import psycopg2.extras
 import requests
 from sqlalchemy import create_engine
-from fastapi import FastAPI, Query, Request, Response, HTTPException, status
-from fastapi.openapi.utils import get_openapi
+from fastapi import FastAPI, Request, Response, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -28,24 +27,6 @@ db_port = os.getenv("DB_PORT", "5432")
 validateuser_url = os.getenv("VALIDATEUSER_URL", "http://localhost:5000")
 
 engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host +":"+ db_port + "/" + db_name)
-
-#adding custom details
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title=service_name,
-        version="",
-        description=service_name,
-        routes=app.routes,
-    )
-    openapi_schema["info"]["x-logo"] = {
-        "url": ""
-    }
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
-
-app.openapi = custom_openapi
 
 # health check endpoint
 class StatusMsg(BaseModel):
@@ -103,7 +84,7 @@ class CompItemModel(BaseModel):
     created: Optional[int] = None
     modifierid: Optional[int] = None
     modified: Optional[int] = None
-    status: str
+    status: Optional[str] = None
     rollup: Optional[int] = None
     rollback: Optional[int] = None
     kind: Optional[str] = None
@@ -140,7 +121,7 @@ class Message(BaseModel):
     
    
 @app.get('/msapi/compitem',
-        response_model=CompItemModel,
+        response_model=List[CompItemModel],
         responses={
              401: {"model": Message,
                    "description": "Authorization Status",
@@ -203,7 +184,7 @@ async def get_compitem(request: Request, compitemid:int):
                                         ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None)])]
             cursor.close()
             conn.close()
-        return result[0]
+        return result
     
     except HTTPException:
         raise
@@ -300,7 +281,7 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
                 }
          }
          )
-async def delete_compitem(compid: int):
+async def delete_compitem(request: Request, compid: int):
 
     try:
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
@@ -356,17 +337,17 @@ async def delete_compitem(compid: int):
                 }
          }
          )
-async def update_compitem(compitemList: List[CompItemModel]):
+async def update_compitem(request: Request, compitemList: List[CompItemModel]):
 
-    # try:
-    #     result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
-    #     if (result is None):
-    #         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
-    #
-    #     if (result.status_code != status.HTTP_200_OK):
-    #             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
-    # except Exception as err:
-    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
+    try:
+        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
+        if (result is None):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
+    
+        if (result.status_code != status.HTTP_200_OK):
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+    except Exception as err:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
     try:
         data_list = []
