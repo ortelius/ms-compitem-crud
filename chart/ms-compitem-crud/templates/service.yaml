@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ms-compitem-crud.name" . }}
+spec:
+  selector:
+    app: {{ include "ms-compitem-crud.name" . }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
+---
