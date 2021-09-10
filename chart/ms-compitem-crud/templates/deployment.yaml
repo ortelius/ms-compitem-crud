@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  {{ include "ms-compitem-crud.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  {{ include "ms-compitem-crud.name" . }}
+      tier: backend
+      track: stable
+  template:
+    metadata:
+      labels:
+        app:  {{ include "ms-compitem-crud.name" . }}
+        tier: backend
+        track: stable
+    spec:
+      containers:
+        - name: {{ include "ms-compitem-crud.name" . }}
+          image: "{{ .Values.DockerRepo }}:{{ .Values.DockerTag }}"
+          imagePullPolicy: Always
+          env:
+            - name: VALIDATEUSER_URL
+              value: https://dev.ortelius.io
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pgcred
+                  key: DBUserName
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: pgcred
+                  key: DBPassword
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: pgcred
+                  key: DBHost
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: pgcred
+                  key: DBPort
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: pgcred
+                  key: DBName
+          ports:
+            - name: http
+              containerPort: 80
+---   
