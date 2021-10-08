@@ -21,6 +21,8 @@ spec:
           image: "{{ .Values.DockerRepo }}:{{ .Values.DockerTag }}"
           imagePullPolicy: Always
           env:
+            - name: VALIDATEUSER_URL
+              value: https://dev.ortelius.io
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
