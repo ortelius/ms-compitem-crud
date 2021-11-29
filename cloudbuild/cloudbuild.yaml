@@ -29,11 +29,12 @@ steps:
       path: /root/.ssh
     env: 
       - 'COMPONENT_APPLICATION=GLOBAL.ortelius.saas.ortelius-devops'
+      - 'COMPONENT_APPLICATION_VERSION=10.0.0'      
       - 'COMPONENT_NAME=GLOBAL.ortelius.saas.ms-compitem-crud'
       - 'COMPONENT_GITURL=git@github.com:ortelius/ortelius-ms-compitem-crud.git'
       - 'COMPONENT_VARIANT=$BRANCH_NAME'
       - 'COMPONENT_VERSION=10.0.0'
-      - 'COMPONENT_VERSION_COMMIT="v$$COMPONENT_VERSION.$$(git rev-list --count $BRANCH_NAME)-g$SHORT_SHA"'
+      - 'COMPONENT_VERSION_COMMIT="v10.0.0.$$(git rev-list --count $BRANCH_NAME)-g$SHORT_SHA"'
       - 'COMPONENT_DOCKERREPO=quay.io/ortelius/ms-compitem-crud'
       - 'COMPONENT_CUSTOMACTION=GLOBAL.HelmChart'
       - 'COMPONENT_CHARTNAME=chart/ms-compitem-crud'
@@ -67,7 +68,7 @@ steps:
     waitFor: ['digest']
     entrypoint: 'bash'
     secretEnv: ['DHUSER', 'DHPASS']
-    args: ['-c', '. /workspace/cloudbuild.sh;dh updatecomp --dhurl https://console.deployhub.com --appname "$$COMPONENT_APPLICATION" --compname "$$COMPONENT_NAME" --compvariant "$$COMPONENT_VARIANT" --compversion "$$COMPONENT_VERSION_COMMIT" --deployenv "$$DEPLOY_ENV" --docker --compattr "GitCommit:$SHORT_SHA" --compattr "GitUrl:$$COMPONENT_GITURL" --compattr "GitRepo:ortelius/$REPO_NAME" --compattr "GitTag:$TAG_NAME" --compattr "GitBranch:$BRANCH_NAME" --compattr "Chart:$$COMPONENT_CHARTNAME" --compattr "DockerSha:$$DIGEST" --compattr "DockerBuildDate:$$BLDDATE" --compattr "DockerRepo:$$COMPONENT_DOCKERREPO" --compattr "BuildId:$BUILD_ID" --compattr "BuildUrl:https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=$PROJECT_ID" --compattr "CustomAction:$$COMPONENT_CUSTOMACTION" --compattr "DockerTag:$$IMAGE_TAG" --compattr "ChartNamespace:$$COMPONENT_CHARTNAMESPACE"']
+    args: ['-c', '. /workspace/cloudbuild.sh;dh updatecomp --dhurl https://console.deployhub.com --appname "$$COMPONENT_APPLICATION" --appversion "$$COMPONENT_APPLICATION_VERSION" --appautoinc Y --deployenv "$$DEPLOY_ENV" --compname "$$COMPONENT_NAME" --compvariant "$$COMPONENT_VARIANT" --compversion "$$COMPONENT_VERSION_COMMIT" --docker --compattr "GitCommit:$SHORT_SHA" --compattr "GitUrl:$$COMPONENT_GITURL" --compattr "GitRepo:ortelius/$REPO_NAME" --compattr "GitTag:$TAG_NAME" --compattr "GitBranch:$BRANCH_NAME" --compattr "Chart:$$COMPONENT_CHARTNAME" --compattr "DockerSha:$$DIGEST" --compattr "DockerBuildDate:$$BLDDATE" --compattr "DockerRepo:$$COMPONENT_DOCKERREPO" --compattr "BuildId:$BUILD_ID" --compattr "BuildUrl:https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=$PROJECT_ID" --compattr "CustomAction:$$COMPONENT_CUSTOMACTION" --compattr "DockerTag:$$IMAGE_TAG" --compattr "ChartNamespace:$$COMPONENT_CHARTNAMESPACE"']
 
 secrets:
 - kmsKeyName: projects/eighth-physics-169321/locations/global/keyRings/cli/cryptoKeys/quay
