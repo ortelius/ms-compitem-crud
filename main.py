@@ -77,6 +77,9 @@ async def health(response: Response):
 class CompItemModel(BaseModel):
     compid: int
     id: int
+    serviceowner: Optional[str] = None
+    serviceowneremail: Optional[str] = None
+    serviceownerphone: Optional[str] = None 
     repositoryid: Optional[int] = None
     target: Optional[str] = None
     name: Optional[str] = None
@@ -108,9 +111,6 @@ class CompItemModel(BaseModel):
     dockertag: Optional[str] = None
     chartrepo: Optional[str] = None
     chartrepourl: Optional[str] = None
-    serviceowner: Optional[str] = None
-    serviceowneremail: Optional[str] = None
-    serviceownerphone: Optional[str] = None 
     slackchannel: Optional[str] = None
     discordchannel: Optional[str] = None
     hipchatchannel: Optional[str] = None
@@ -185,12 +185,13 @@ async def get_compitem(request: Request, compitemid:int):
                     cursor.execute(sql, params)
                     result = cursor.fetchall()
                     if (not result):
-                        result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), ('rollup', None), ('rollback', None), ('repositoryid', None),
-                                                ('target', None), ('xpos', None), ('ypos', None),  ('kind', None), ('buildid', None), ('buildurl', None),
-                                                ('chart', None), ('operator', None), ('builddate', None), ('dockersha', None), ('gitcommit', None),
-                                                ('gitrepo', None), ('gittag', None), ('giturl', None), ('chartversion', None), ('chartnamespace', None), ('dockertag', None), ('chartrepo', None),
-                                                ('chartrepourl', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
-                                                ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None)])]
+                        result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
+                                                ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
+                                                ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
+                                                ('rollup', None), ('rollback', None), ('repositoryid', None),
+                                                ('target', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
+                                                ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), ('operator', None), 
+                                                ('dockertag', None), ('dockersha', None), ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
                     cursor.close()
                     conn.close()
                 return result
@@ -464,4 +465,4 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
     
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=5001)
