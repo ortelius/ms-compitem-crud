@@ -1,11 +1,11 @@
 Chart: chart/ms-compitem-crud
 ChartNamespace: ortelius
 DockerRepo: quay.io/ortelius/ms-compitem-crud
-DockerSha: bb0d917e79559f4b2f0cecc6a59ad3ff945e61a04d5a9f8327837eff81591af5
-DockerTag: deploy-v10.0.0.32-g817abb3
+DockerSha: 792dfd00e8bdc878587d970d53fc74c691356bf9122b5032073eb4d4984172ee
+DockerTag: deploy-v10.0.0.34-gd6d41a4
 EXT: sh
 GitBranch: deploy
-GitCommit: 817abb3
+GitCommit: d6d41a4
 GitRepo: ortelius/ortelius-ms-compitem-crud
 GitTag: deploy
 GitUrl: git@github.com:ortelius/ortelius-ms-compitem-crud.git
@@ -16,20 +16,20 @@ aks:
   certificate: /root/.ssh/aks.pem
   cluster: cluster2-aks
   resourcegroup: cluster1-rg
-application: ortelius-devops;10_0_4
-builddate: Wed Dec  1 18:39:51 UTC 2021
-buildid: 324e661e-c41f-4e65-92d1-028cf5d44da6
-buildurl: https://console.cloud.google.com/cloud-build/builds/324e661e-c41f-4e65-92d1-028cf5d44da6?project=eighth-physics-169321
+application: ortelius-devops;10_0_5
+builddate: Wed Dec  1 19:12:27 UTC 2021
+buildid: d58c7c65-8194-499c-822c-0ca4f6be840d
+buildurl: https://console.cloud.google.com/cloud-build/builds/d58c7c65-8194-499c-822c-0ca4f6be840d?project=eighth-physics-169321
 chart: chart/ms-compitem-crud
 chartnamespace: ortelius
 chartpublish: Y
-component: ms-compitem-crud;deploy;v10_0_0_32_g817abb3
+component: ms-compitem-crud;deploy;v10_0_0_34_gd6d41a4
 dockerrepo: quay.io/ortelius/ms-compitem-crud
-dockersha: bb0d917e79559f4b2f0cecc6a59ad3ff945e61a04d5a9f8327837eff81591af5
-dockertag: deploy-v10.0.0.32-g817abb3
-dropzone: /tmp/tdm.1457.11
+dockersha: 792dfd00e8bdc878587d970d53fc74c691356bf9122b5032073eb4d4984172ee
+dockertag: deploy-v10.0.0.34-gd6d41a4
+dropzone: /tmp/tdm.1458.9
 environment: aks-cluster
-gitcommit: 817abb3
+gitcommit: d6d41a4
 gitrepo: ortelius/ortelius-ms-compitem-crud
 gittag: deploy
 giturl: git@github.com:ortelius/ortelius-ms-compitem-crud.git
