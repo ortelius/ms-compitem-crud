@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - deploy
+    paths:
+      - 'chart/**'
 
 jobs:
   release:
