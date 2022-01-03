@@ -91,11 +91,11 @@ async def health(response: Response):
 class CompItemModel(BaseModel):
     compid: int
     id: int
+    serviceownerid: Optional[str] = None
     serviceowner: Optional[str] = None
     serviceowneremail: Optional[str] = None
     serviceownerphone: Optional[str] = None 
     repositoryid: Optional[int] = None
-    target: Optional[str] = None
     name: Optional[str] = None
     summary: Optional[str] = None
     predecessorid: Optional[int] = None
@@ -112,7 +112,6 @@ class CompItemModel(BaseModel):
     buildid: Optional[str] = None
     buildurl: Optional[str] = None
     chart: Optional[str] = None
-    operator: Optional[str] = None
     builddate: Optional[str] = None
     dockersha: Optional[str] = None
     gitcommit: Optional[str] = None
@@ -188,23 +187,23 @@ async def get_compitem(request: Request, compitemid:int):
                     conn = connection.connection
                     authorized = False      # init to not authorized
                     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-                    sql = """select compid, id, name, rollup, rollback, repositoryid, target, xpos, ypos,
-                                kind, buildid, buildurl, chart, operator, builddate, dockersha, gitcommit,
+                    sql = """select a.compid, a.id, a.name, a.rollup, a.rollback, repositoryid, target, a.xpos, a.ypos,
+                                kind, buildid, buildurl, chart, builddate, dockersha, gitcommit,
                                 gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
-                                chartrepourl, serviceowner, serviceowneremail, serviceownerphone, 
+                                chartrepourl, c.name "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone", 
                                 slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
-                                from dm.dm_componentitem where id = %s"""
+                                from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c where a.compid = b.id and b.ownerid = c.id and a.id = %s"""
             
                     params = (str(compitemid),)
                     cursor.execute(sql, params)
                     result = cursor.fetchall()
                     if (not result):
                         result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
-                                                ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
+                                                ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
                                                 ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
                                                 ('rollup', None), ('rollback', None), ('repositoryid', None),
                                                 ('target', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
-                                                ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), ('operator', None), 
+                                                ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
                                                 ('dockertag', None), ('dockersha', None), ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
                     cursor.close()
                     conn.close()
