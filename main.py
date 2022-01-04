@@ -91,44 +91,44 @@ async def health(response: Response):
 class CompItemModel(BaseModel):
     compid: int
     id: int
-    serviceownerid: Optional[str] = None
-    serviceowner: Optional[str] = None
-    serviceowneremail: Optional[str] = None
-    serviceownerphone: Optional[str] = None 
-    repositoryid: Optional[int] = None
-    name: Optional[str] = None
-    summary: Optional[str] = None
-    predecessorid: Optional[int] = None
-    xpos: Optional[int] = None
-    ypos: Optional[int] = None
-    creatorid: Optional[int] = None
-    created: Optional[int] = None
-    modifierid: Optional[int] = None
-    modified: Optional[int] = None
-    status: Optional[str] = None
-    rollup: Optional[int] = None
-    rollback: Optional[int] = None
-    kind: Optional[str] = None
+    builddate: Optional[str] = None
     buildid: Optional[str] = None
     buildurl: Optional[str] = None
     chart: Optional[str] = None
-    builddate: Optional[str] = None
+    chartnamespace: Optional[str] = None
+    chartrepo: Optional[str] = None
+    chartrepourl: Optional[str] = None
+    chartversion: Optional[str] = None
+    created: Optional[int] = None
+    creatorid: Optional[int] = None
+    discordchannel: Optional[str] = None
+    dockerrepo: Optional[str] = None
     dockersha: Optional[str] = None
+    dockertag: Optional[str] = None
     gitcommit: Optional[str] = None
     gitrepo: Optional[str] = None
     gittag: Optional[str] = None
     giturl: Optional[str] = None
-    dockerrepo: Optional[str] = None
-    chartversion: Optional[str] = None
-    chartnamespace: Optional[str] = None
-    dockertag: Optional[str] = None
-    chartrepo: Optional[str] = None
-    chartrepourl: Optional[str] = None
-    slackchannel: Optional[str] = None
-    discordchannel: Optional[str] = None
     hipchatchannel: Optional[str] = None
-    pagerdutyurl: Optional[str] = None
+    kind: Optional[str] = None
+    modified: Optional[int] = None
+    modifierid: Optional[int] = None
+    name: Optional[str] = None
     pagerdutybusinessurl: Optional[str] = None
+    pagerdutyurl: Optional[str] = None
+    predecessorid: Optional[int] = None
+    repositoryid: Optional[int] = None
+    rollback: Optional[int] = None
+    rollup: Optional[int] = None
+    serviceowner: Optional[str] = None
+    serviceowneremail: Optional[str] = None
+    serviceownerid: Optional[str] = None
+    serviceownerphone: Optional[str] = None 
+    slackchannel: Optional[str] = None
+    status: Optional[str] = None
+    summary: Optional[str] = None
+    xpos: Optional[int] = None
+    ypos: Optional[int] = None
      
 class CompItemModelList(BaseModel):
     data: List[CompItemModel]
@@ -188,9 +188,9 @@ async def get_compitem(request: Request, compitemid:int):
                     authorized = False      # init to not authorized
                     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
                     sql = """select a.compid, a.id, a.name, a.rollup, a.rollback, repositoryid, target, a.xpos, a.ypos,
-                                kind, buildid, buildurl, chart, builddate, dockersha, gitcommit,
+                                kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
                                 gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
-                                chartrepourl, c.name "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone", 
+                                chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone", 
                                 slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
                                 from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c where a.compid = b.id and b.ownerid = c.id and a.id = %s"""
             
@@ -204,7 +204,8 @@ async def get_compitem(request: Request, compitemid:int):
                                                 ('rollup', None), ('rollback', None), ('repositoryid', None),
                                                 ('target', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
                                                 ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
-                                                ('dockertag', None), ('dockersha', None), ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
+                                                ('dockerrepo', None), ('dockertag', None), ('dockersha', None), 
+                                                ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
                     cursor.close()
                     conn.close()
                 return result
