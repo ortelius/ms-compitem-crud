@@ -18,7 +18,7 @@ ChartNamespace: ortelius
 CustomAction: GLOBAL.HelmChart
 DockerRepo: quay.io/ortelius/ms-compitem-crud
 DockerSha: b82a6ff75a3f4f2dfe1061cad85229c90dc827db37dd15f0bd7d8d6ff1875bcb
-DockerTag: deploy-v10.0.0.24-g3a9f3fb
+DockerTag: deploy-v10.0.0.44-gd513619
 EXT: sh
 GitBranch: deploy
 GitCommit: 3a9f3fb
@@ -37,10 +37,10 @@ buildid: 5c58697f-fdcb-4e2a-b1be-b16e8d925ced
 buildurl: https://console.cloud.google.com/cloud-build/builds/5c58697f-fdcb-4e2a-b1be-b16e8d925ced?project=eighth-physics-169321
 chart: chart/ms-compitem-crud
 chartnamespace: ortelius
-component: ms-compitem-crud;deploy;v10_0_0_24_g3a9f3fb
+component: ms-compitem-crud;deploy;v10_0_0_44_gd513619
 dockerrepo: quay.io/ortelius/ms-compitem-crud
 dockersha: b82a6ff75a3f4f2dfe1061cad85229c90dc827db37dd15f0bd7d8d6ff1875bcb
-dockertag: deploy-v10.0.0.24-g3a9f3fb
+dockertag: deploy-v10.0.0.44-gd513619
 dropzone: /tmp/tdm.1234.5
 environment: aks-cluster
 gitcommit: 3a9f3fb
