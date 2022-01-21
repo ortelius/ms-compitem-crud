@@ -42,10 +42,11 @@ jobs:
       
     steps:
       - run: |
+          echo https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/actions/workflows/$WORKFLOW_FILENAME/dispatches
           curl \
+            -v \
             --request POST \
             --url https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/actions/workflows/$WORKFLOW_FILENAME/dispatches \
             --header "authorization: Bearer ${{ secrets.HELM_INDEXER_TOKEN }}" \
             --header "Accept: application/vnd.github.v3+json" \
             --data '{"ref":"deploy"}' \
-            --fail
