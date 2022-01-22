@@ -14,9 +14,7 @@
 
 #FROM quay.io/ortelius/ms-python-base:fastapi-1.0 as base
 
-#FROM quay.io/karamjot23singh/karamjot-dev:base-test-1.0 as base
-
-FROM quay.io/karamjot23singh/karamjot-dev:base-py3.9-alpine3.14-1.0 as base
+FROM quay.io/karamjot23singh/karamjot-dev:base-py3.9-alpine3.14-1.1 as base
 
 ENV DB_HOST localhost
 ENV DB_NAME postgres
