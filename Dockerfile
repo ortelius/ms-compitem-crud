@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM quay.io/ortelius/ms-python-base:fastapi-1.0 as base
+FROM quay.io/ortelius/ms-python-base:fastapi-1.1 as base
 
 ENV DB_HOST localhost
 ENV DB_NAME postgres
