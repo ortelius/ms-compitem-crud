@@ -23,7 +23,7 @@ from sqlalchemy import create_engine
 from fastapi import FastAPI, Request, Response, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Optional
-from sqlalchemy.exc import OperationalError, StatementError
+from sqlalchemy.exc import OperationalError, StatementError, InterfaceError
 from time import sleep
 import logging
 
@@ -117,7 +117,7 @@ class CompItemModel(BaseModel):
     pagerdutybusinessurl: Optional[str] = None
     pagerdutyurl: Optional[str] = None
     predecessorid: Optional[int] = None
-    repositoryid: Optional[int] = None
+    repository: Optional[str] = None
     rollback: Optional[int] = None
     rollup: Optional[int] = None
     serviceowner: Optional[str] = None
@@ -127,6 +127,7 @@ class CompItemModel(BaseModel):
     slackchannel: Optional[str] = None
     status: Optional[str] = None
     summary: Optional[str] = None
+    targetdirectory: Optional[str] = None
     xpos: Optional[int] = None
     ypos: Optional[int] = None
      
@@ -166,7 +167,7 @@ class Message(BaseModel):
              # },
          }
          )
-async def get_compitem(request: Request, compitemid:int):
+async def get_compitem(request: Request, compitemid:int, comptype: Optional[str] = ''):
     try:
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
@@ -187,31 +188,61 @@ async def get_compitem(request: Request, compitemid:int):
                     conn = connection.connection
                     authorized = False      # init to not authorized
                     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-                    sql = """select a.compid, a.id, a.name, a.rollup, a.rollback, repositoryid, target, a.xpos, a.ypos,
+
+                    sql = """select a.compid, a.id, a.name, a.rollup, a.rollback, fulldomain(r.domainid, r.name) "repository", target "targetdirectory", a.xpos, a.ypos,
                                 kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
                                 gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
                                 chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone", 
                                 slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
-                                from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c where a.compid = b.id and b.ownerid = c.id and a.id = %s"""
+                                from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c, dm.dm_repository r 
+                                where a.compid = b.id and b.ownerid = c.id and a.repositoryid = r.id and a.id = %s
+                            union
+                                select a.compid, a.id, a.name, a.rollup, a.rollback, null, target "targetdirectory", a.xpos, a.ypos,
+                                kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
+                                gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
+                                chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone", 
+                                slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
+                                from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c
+                                where a.compid = b.id and b.ownerid = c.id and a.repositoryid is null and a.id = %s"""
             
-                    params = (str(compitemid),)
+                    params = (str(compitemid),str(compitemid),)
                     cursor.execute(sql, params)
                     result = cursor.fetchall()
                     if (not result):
-                        result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
-                                                ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
-                                                ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
-                                                ('rollup', None), ('rollback', None), ('repositoryid', None),
-                                                ('target', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
-                                                ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
-                                                ('dockerrepo', None), ('dockertag', None), ('dockersha', None), 
-                                                ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
+                        if (comptype == 'rf_database'):
+                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
+                                        ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
+                                        ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
+                                        ('rollup', 1), ('rollback', 0), ('repository', None), 
+                                        ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
+                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
+                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None), 
+                                        ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
+                        elif (comptype == 'rb_database'):
+                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
+                                        ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
+                                        ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
+                                        ('rollup', 0), ('rollback', 1), ('repository', None), 
+                                        ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
+                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
+                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None), 
+                                        ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
+                        else:
+                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
+                                        ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
+                                        ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
+                                        ('rollup', 0), ('rollback', 0), ('repository', None), 
+                                        ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
+                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
+                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None), 
+                                        ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
                     cursor.close()
                     conn.close()
                 return result
             
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
+                    sleep_for = 0.2
                     logging.error(
                         "Database connection error: {} - sleeping for {}s"
                         " and will retry (attempt #{} of {})".format(
@@ -219,7 +250,7 @@ async def get_compitem(request: Request, compitemid:int):
                         )
                     )
                     #200ms of sleep time in cons. retry calls 
-                    sleep(0.2) 
+                    sleep(sleep_for) 
                     attempt += 1
                     continue
                 else:
@@ -300,6 +331,7 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
                 
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
+                    sleep_for = 0.2
                     logging.error(
                         "Database connection error: {} - sleeping for {}s"
                         " and will retry (attempt #{} of {})".format(
@@ -307,7 +339,7 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
                         )
                     )
                     #200ms of sleep time in cons. retry calls 
-                    sleep(0.2) 
+                    sleep(sleep_for) 
                     attempt += 1
                     continue
                 else:
@@ -461,6 +493,7 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
                 
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
+                    sleep_for = 0.2
                     logging.error(
                         "Database connection error: {} - sleeping for {}s"
                         " and will retry (attempt #{} of {})".format(
@@ -468,7 +501,7 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
                         )
                     )
                     #200ms of sleep time in cons. retry calls 
-                    sleep(0.2) 
+                    sleep(sleep_for) 
                     attempt += 1
                     continue
                 else:
