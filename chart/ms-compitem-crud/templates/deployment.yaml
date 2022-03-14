@@ -36,7 +36,8 @@ spec:
           imagePullPolicy: Always
           env:
             - name: VALIDATEUSER_URL
-              value: {{ .Values.ValidateUserUrl | default "http://ms-validate-user.{{ metadata.namespace }}.svc.cluster.local" }}
+              {{ $validateuser_url := printf "http://ms-validate-user.%s.svc.cluster.local" metadata.namespace }}
+              value: {{ .Values.ValidateUserUrl | default $validateuser_url | quote }}          
             - name: DB_USER
               valueFrom:
                 secretKeyRef:

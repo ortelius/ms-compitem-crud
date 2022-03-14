@@ -42,7 +42,7 @@ db_name = os.getenv("DB_NAME", "postgres")
 db_user = os.getenv("DB_USER", "postgres")
 db_pass = os.getenv("DB_PASS", "postgres")
 db_port = os.getenv("DB_PORT", "5432")
-validateuser_url = os.getenv("VALIDATEUSER_URL", "http://localhost:5000")
+validateuser_url = os.getenv('VALIDATEUSER_URL', 'http://localhost:5000' )
 
 engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host +":"+ db_port + "/" + db_name, pool_pre_ping=True)
 
