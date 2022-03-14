@@ -36,7 +36,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: VALIDATEUSER_URL
-              value: https://dev.ortelius.io
+              value: {{ .Values.ValidateUserUrl | default "http://ms-validate-user.{{ metadata.namespace }}.svc.cluster.local" }}
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
