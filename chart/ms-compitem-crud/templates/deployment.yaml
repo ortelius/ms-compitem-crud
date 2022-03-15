@@ -34,10 +34,7 @@ spec:
         - name: {{ include "ms-compitem-crud.name" . }}
           image: "{{ .Values.DockerRepo }}:{{ .Values.DockerTag }}"
           imagePullPolicy: Always
-          env:
-            - name: VALIDATEUSER_URL
-              {{ $validateuser_url := printf "http://ms-validate-user.%s.svc.cluster.local" metadata.namespace }}
-              value: {{ .Values.ValidateUserUrl | default $validateuser_url | quote }}          
+          env: 
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
