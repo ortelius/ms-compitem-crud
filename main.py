@@ -414,6 +414,7 @@ async def delete_compitem(request: Request, compid: int):
                 return {"message": 'component deleted succesfully'}
                 
             except (InterfaceError, OperationalError) as ex:
+                sleep_for = 0.2
                 if attempt < no_of_retry:
                     logging.error(
                         "Database connection error: {} - sleeping for {}s"
@@ -422,7 +423,7 @@ async def delete_compitem(request: Request, compid: int):
                         )
                     )
                     #200ms of sleep time in cons. retry calls 
-                    sleep(0.2) 
+                    sleep(sleep_for) 
                     attempt += 1
                     continue
                 else:
