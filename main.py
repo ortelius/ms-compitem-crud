@@ -12,20 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
+import socket
 from collections import OrderedDict
+from time import sleep
+from typing import List, Optional
 
-import uvicorn
 import psycopg2
 import psycopg2.extras
 import requests
-from sqlalchemy import create_engine
-from fastapi import FastAPI, Request, Response, HTTPException, status
+import uvicorn
+from fastapi import FastAPI, HTTPException, Request, Response, status
 from pydantic import BaseModel
-from typing import List, Optional
-from sqlalchemy.exc import OperationalError, StatementError, InterfaceError
-from time import sleep
-import logging
+from sqlalchemy import create_engine
+from sqlalchemy.exc import InterfaceError, OperationalError, StatementError
 
 # Init Globals
 service_name = 'ortelius-ms-compitem-crud'
@@ -42,7 +43,12 @@ db_name = os.getenv("DB_NAME", "postgres")
 db_user = os.getenv("DB_USER", "postgres")
 db_pass = os.getenv("DB_PASS", "postgres")
 db_port = os.getenv("DB_PORT", "5432")
-validateuser_url = os.getenv('VALIDATEUSER_URL', 'http://localhost:5000' )
+validateuser_url = os.getenv('VALIDATEUSER_URL', None )
+
+if (validateuser_url is None):
+    validateuser_host = os.getenv('MS_VALIDATE_USER_SERVICE_HOST', '127.0.0.1')
+    host = socket.gethostbyaddr(validateuser_host)[0]
+    validateuser_url = 'http://' + host + ':' + str(os.getenv('MS_VALIDATE_USER_SERVICE_PORT', 80))
 
 engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host +":"+ db_port + "/" + db_name, pool_pre_ping=True)
 
