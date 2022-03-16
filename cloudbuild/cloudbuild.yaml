@@ -48,7 +48,7 @@ steps:
         source /workspace/cloudbuild.sh; \
         docker login quay.io --username "$$QUAY_USERID" --password $$QUAY_PASSWORD  
 
-  # Build and push quay.io/ortelius/ms-compitem-crud
+  # Build and push
   - name: 'gcr.io/cloud-builders/docker'
     id: build_push
     entrypoint: 'bash'
