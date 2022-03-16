@@ -1,52 +1,38 @@
-# Copyright (c) 2021 Linux Foundation
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 BuildNumber: 0
 Chart: chart/ms-compitem-crud
 ChartNamespace: ortelius
 CustomAction: GLOBAL.HelmChart
 DockerRepo: quay.io/ortelius/ms-compitem-crud
-DockerSha: b82a6ff75a3f4f2dfe1061cad85229c90dc827db37dd15f0bd7d8d6ff1875bcb
-DockerTag: deploy-v10.0.0.77-g9e00b71
+DockerSha: 93985ad08d8c
+DockerTag: deploy-v10.0.0.88-g266ad67
 EXT: sh
 GitBranch: deploy
-GitCommit: 3a9f3fb
+GitCommit: 266ad67
 GitRepo: ortelius/ortelius-ms-compitem-crud
 GitTag: deploy
-GitUrl: git@github.com:ortelius/ortelius-ms-compitem-crud.git
+GitUrl: https://github.com/ortelius/ortelius-ms-compitem-crud.git
 RE_PHYSICAL_HOSTNAME: localhost
 RE_PHYSICAL_SERVER: localhost
 aks:
   admin: true
   cluster: cluster2-aks
   resourcegroup: cluster1-rg
-application: ortelius-devops
-builddate: Sat Sep 11 13:53:27 UTC 2021
-buildid: 5c58697f-fdcb-4e2a-b1be-b16e8d925ced
-buildurl: https://console.cloud.google.com/cloud-build/builds/5c58697f-fdcb-4e2a-b1be-b16e8d925ced?project=eighth-physics-169321
+application: ortelius;10_0_0
+builddate: Wed Mar 16 18:21:43 2022
+buildid: 91b640de-ae38-445c-8671-184515817b86
+buildurl: https://console.cloud.google.com/cloud-build/builds/91b640de-ae38-445c-8671-184515817b86?project=eighth-physics-169321
 chart: chart/ms-compitem-crud
 chartnamespace: ortelius
-component: ms-compitem-crud;deploy;v10_0_0_77_g9e00b71
+component: ms-compitem-crud;deploy;v10_0_0_88_g266ad67
 dockerrepo: quay.io/ortelius/ms-compitem-crud
-dockersha: b82a6ff75a3f4f2dfe1061cad85229c90dc827db37dd15f0bd7d8d6ff1875bcb
-dockertag: deploy-v10.0.0.77-g9e00b71
-dropzone: /tmp/tdm.1234.5
+dockersha: 93985ad08d8c
+dockertag: deploy-v10.0.0.88-g266ad67
+dropzone: /tmp/tdm.1538.4
 environment: aks-cluster
-gitcommit: 3a9f3fb
+gitcommit: 266ad67
 gitrepo: ortelius/ortelius-ms-compitem-crud
 gittag: deploy
-giturl: git@github.com:ortelius/ortelius-ms-compitem-crud.git
+giturl: https://github.com/ortelius/ortelius-ms-compitem-crud.git
 kubectl_context: cluster2-aks-admin
 server_hostname: localhost
 server_name: localhost
