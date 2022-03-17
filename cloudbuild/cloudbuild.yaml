@@ -59,6 +59,17 @@ steps:
         docker build --tag $$COMPONENT_DOCKERREPO:$$IMAGE_TAG -f /workspace/Dockerfile .; \
         docker push $$COMPONENT_DOCKERREPO:$$IMAGE_TAG
 
+  #syft scan
+  - name: 'gcr.io/cloud-builders/docker'
+    id: scan
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sudo sh -s -- -b /usr/local/bin; \
+        syft packages $$COMPONENT_DOCKERREPO:$$IMAGE_TAG --scope all-layers -o cyclonedx-json > /workspace/cyclonedx.json; \
+        cat /workspace/cyclonedx.json;
+
   # Get image id
   - name: 'gcr.io/cloud-builders/docker'
     id: digest
