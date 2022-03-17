@@ -5,7 +5,7 @@ on:
     branches:
       - deploy
     paths:
-      - 'chart/**'
+      - 'chart/**/Chart.yaml'
 
 jobs:
   release:
