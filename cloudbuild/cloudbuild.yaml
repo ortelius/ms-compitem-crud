@@ -74,8 +74,6 @@ steps:
         echo ${COMPONENT_DOCKERREPO}:${IMAGE_TAG}; \
         syft packages $$COMPONENT_DOCKERREPO:$$IMAGE_TAG --scope all-layers -o cyclonedx-json > /workspace/cyclonedx.json; \
         cat /workspace/cyclonedx.json;
-    options:
-      dynamic_substitutions: true
 
   # Get image id
   - name: 'gcr.io/cloud-builders/docker'
