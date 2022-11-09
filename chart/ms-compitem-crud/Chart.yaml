@@ -1,6 +1,5 @@
-apiVersion: v2
-name: ms-compitem-crud
 description: Dependency Packages
+icon: https://ortelius.github.io/ortelius-charts/logo.png
+name: ms-compitem-crud
 type: application
-version: 0.1.0
-appVersion: "1.0"
+version: 10.0.0-build.79
