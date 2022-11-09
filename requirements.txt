@@ -4,4 +4,4 @@
 # PyJWT==2.0.1 - installed by base image
 # sqlalchemy==1.4.22 - installed by base image
 pydantic==1.8.2
-requests==2.18.4
+requests==2.27.1
