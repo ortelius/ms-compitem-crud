@@ -1,7 +1,6 @@
-# cryptography - installed by base image
-# FastApi - installed by base image
-# psycopg2 - installed by base image
-# PyJWT==2.0.1 - installed by base image
-# sqlalchemy==1.4.22 - installed by base image
-pydantic==1.8.2
-requests==2.27.1
+fastapi==0.89.1
+psycopg2_binary==2.9.5
+pydantic==1.10.4
+SQLAlchemy==1.4.46
+uvicorn==0.20.0
+requests==2.28.2

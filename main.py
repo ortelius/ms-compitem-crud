@@ -35,7 +35,7 @@ db_conn_retry = 3
 app = FastAPI(
     title=service_name,
     description=service_name
-    )
+)
 
 # Init db connection
 db_host = os.getenv("DB_HOST", "localhost")
@@ -50,34 +50,18 @@ if (validateuser_url is None):
     host = socket.gethostbyaddr(validateuser_host)[0]
     validateuser_url = 'http://' + host + ':' + str(os.getenv('MS_VALIDATE_USER_SERVICE_PORT', 80))
 
-engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host +":"+ db_port + "/" + db_name, pool_pre_ping=True)
+engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host + ":" + db_port + "/" + db_name, pool_pre_ping=True)
 
 # health check endpoint
+
+
 class StatusMsg(BaseModel):
     status: str
     service_name: Optional[str] = None
-    
-@app.get("/health",
-         responses={
-             503: {"model": StatusMsg,
-                   "description": "DOWN Status for the Service",
-                   "content": {
-                       "application/json": {
-                           "example": {"status": 'DOWN'}
-                       },
-                   },
-                   },
-             200: {"model": StatusMsg,
-                   "description": "UP Status for the Service",
-                   "content": {
-                       "application/json": {
-                           "example": {"status": 'UP', "service_name": service_name}
-                       }
-                   },
-                   },
-         }
-         )
-async def health(response: Response):
+
+
+@app.get("/health")
+async def health(response: Response) -> StatusMsg:
     try:
         with engine.connect() as connection:
             conn = connection.connection
@@ -144,36 +128,8 @@ class Message(BaseModel):
     detail: str
     
    
-@app.get('/msapi/compitem',
-        response_model=List[CompItemModel],
-        responses={
-             401: {"model": Message,
-                   "description": "Authorization Status",
-                   "content": {
-                       "application/json": {
-                           "example": {"detail": "Authorization failed"}
-                       },
-                   },
-                   },
-             500: {"model": Message,
-                   "description": "SQL Error",
-                   "content": {
-                       "application/json": {
-                           "example": {"detail": "SQL Error: 30x"}
-                       },
-                   },
-                    } #,
-             # 200: {
-             #     "description": "List of domain ids the user belongs to.",
-             #     "content": {
-             #         "application/json": {
-             #             "example": [1, 200, 201, 5033]
-             #         }
-             #     },
-             # },
-         }
-         )
-async def get_compitem(request: Request, compitemid:int, comptype: Optional[str] = ''):
+@app.get('/msapi/compitem')  
+async def get_compitem(request: Request, compitemid:int, comptype: Optional[str] = '') -> list[CompItemModel]:
     try:
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
@@ -271,26 +227,7 @@ async def get_compitem(request: Request, compitemid:int, comptype: Optional[str]
 
 # Not implemented fully.  SQL query is not complete
 
-@app.post("/msapi/compitem",
-         responses={
-             401: {"model": Message,
-                   "description": "Authorization Status",
-                   "content": {
-                       "application/json": {
-                           "example": {"detail": "Authorization failed"}
-                       },
-                   },
-                   },
-             500: {"model": Message,
-                   "description": "SQL Error",
-                   "content": {
-                       "application/json": {
-                           "example": {"detail": "SQL Error: 30x"}
-                       },
-                   },
-                }
-         }
-         )
+@app.post("/msapi/compitem")
 async def create_compitem(response: Response, request: Request, compItemList: List[CompItemModel]):
 
     try:
@@ -358,26 +295,7 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
         # conn.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
-@app.delete("/msapi/compitem",
-         responses={
-             401: {"model": Message,
-                   "description": "Authorization Status",
-                   "content": {
-                       "application/json": {
-                           "example": {"detail": "Authorization failed"}
-                       },
-                   },
-                   },
-             500: {"model": Message,
-                   "description": "SQL Error",
-                   "content": {
-                       "application/json": {
-                           "example": {"detail": "SQL Error: 30x"}
-                       },
-                   },
-                }
-         }
-         )
+@app.delete("/msapi/compitem")
 async def delete_compitem(request: Request, compid: int):
 
     try:
@@ -436,26 +354,7 @@ async def delete_compitem(request: Request, compid: int):
         # conn.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
-@app.put("/msapi/compitem",
-         responses={
-             401: {"model": Message,
-                   "description": "Authorization Status",
-                   "content": {
-                       "application/json": {
-                           "example": {"detail": "Authorization failed"}
-                       },
-                   },
-                   },
-             500: {"model": Message,
-                   "description": "SQL Error",
-                   "content": {
-                       "application/json": {
-                           "example": {"detail": "SQL Error: 30x"}
-                       },
-                   },
-                }
-         }
-         )
+@app.put("/msapi/compitem")
 async def update_compitem(request: Request, compitemList: List[CompItemModel]):
 
     try:
