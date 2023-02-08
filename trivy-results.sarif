@@ -1,0 +1,971 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Trivy Vulnerability Scanner",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
+          "rules": [
+            {
+              "id": "CVE-2010-4756",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "glibc: glob implementation can cause excessive CPU and memory consumption due to crafted glob expressions"
+              },
+              "fullDescription": {
+                "text": "The glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2010-4756",
+              "help": {
+                "text": "Vulnerability CVE-2010-4756\nSeverity: LOW\nPackage: libc6\nFixed Version: \nLink: [CVE-2010-4756](https://avd.aquasec.com/nvd/cve-2010-4756)\nThe glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632.",
+                "markdown": "**Vulnerability CVE-2010-4756**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|libc6||[CVE-2010-4756](https://avd.aquasec.com/nvd/cve-2010-4756)|\n\nThe glob implementation in the GNU C Library (aka glibc or libc6) allows remote authenticated users to cause a denial of service (CPU and memory consumption) via crafted glob expressions that do not match any pathnames, as demonstrated by glob expressions in STAT commands to an FTP daemon, a different vulnerability than CVE-2010-2632."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2018-20796",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c"
+              },
+              "fullDescription": {
+                "text": "In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by \u0026#39;(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+\u0026#39; in grep."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2018-20796",
+              "help": {
+                "text": "Vulnerability CVE-2018-20796\nSeverity: LOW\nPackage: libc6\nFixed Version: \nLink: [CVE-2018-20796](https://avd.aquasec.com/nvd/cve-2018-20796)\nIn the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep.",
+                "markdown": "**Vulnerability CVE-2018-20796**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|libc6||[CVE-2018-20796](https://avd.aquasec.com/nvd/cve-2018-20796)|\n\nIn the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(\\227|)(\\\\1\\\\1|t1|\\\\\\2537)+' in grep."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2019-1010022",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "glibc: stack guard protection bypass"
+              },
+              "fullDescription": {
+                "text": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard. NOTE: Upstream comments indicate \u0026#34;this is being treated as a non-security bug and no real threat.\u0026#34;"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1010022",
+              "help": {
+                "text": "Vulnerability CVE-2019-1010022\nSeverity: LOW\nPackage: libc6\nFixed Version: \nLink: [CVE-2019-1010022](https://avd.aquasec.com/nvd/cve-2019-1010022)\n** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard. NOTE: Upstream comments indicate \"this is being treated as a non-security bug and no real threat.\"",
+                "markdown": "**Vulnerability CVE-2019-1010022**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|libc6||[CVE-2019-1010022](https://avd.aquasec.com/nvd/cve-2019-1010022)|\n\n** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass stack guard protection. The component is: nptl. The attack vector is: Exploit stack buffer overflow vulnerability and use this bypass vulnerability to bypass stack guard. NOTE: Upstream comments indicate \"this is being treated as a non-security bug and no real threat.\""
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2019-1010023",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "glibc: running ldd on malicious ELF leads to code execution because of wrong size computation"
+              },
+              "fullDescription": {
+                "text": "** DISPUTED ** GNU Libc current is affected by: Re-mapping current loaded library with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code. NOTE: Upstream comments indicate \u0026#34;this is being treated as a non-security bug and no real threat.\u0026#34;"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1010023",
+              "help": {
+                "text": "Vulnerability CVE-2019-1010023\nSeverity: LOW\nPackage: libc6\nFixed Version: \nLink: [CVE-2019-1010023](https://avd.aquasec.com/nvd/cve-2019-1010023)\n** DISPUTED ** GNU Libc current is affected by: Re-mapping current loaded library with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code. NOTE: Upstream comments indicate \"this is being treated as a non-security bug and no real threat.\"",
+                "markdown": "**Vulnerability CVE-2019-1010023**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|libc6||[CVE-2019-1010023](https://avd.aquasec.com/nvd/cve-2019-1010023)|\n\n** DISPUTED ** GNU Libc current is affected by: Re-mapping current loaded library with malicious ELF file. The impact is: In worst case attacker may evaluate privileges. The component is: libld. The attack vector is: Attacker sends 2 ELF files to victim and asks to run ldd on it. ldd execute code. NOTE: Upstream comments indicate \"this is being treated as a non-security bug and no real threat.\""
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2019-1010024",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "glibc: ASLR bypass using cache of thread stack and heap"
+              },
+              "fullDescription": {
+                "text": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc. NOTE: Upstream comments indicate \u0026#34;this is being treated as a non-security bug and no real threat.\u0026#34;"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1010024",
+              "help": {
+                "text": "Vulnerability CVE-2019-1010024\nSeverity: LOW\nPackage: libc6\nFixed Version: \nLink: [CVE-2019-1010024](https://avd.aquasec.com/nvd/cve-2019-1010024)\n** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc. NOTE: Upstream comments indicate \"this is being treated as a non-security bug and no real threat.\"",
+                "markdown": "**Vulnerability CVE-2019-1010024**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|libc6||[CVE-2019-1010024](https://avd.aquasec.com/nvd/cve-2019-1010024)|\n\n** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may bypass ASLR using cache of thread stack and heap. The component is: glibc. NOTE: Upstream comments indicate \"this is being treated as a non-security bug and no real threat.\""
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2019-1010025",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "glibc: information disclosure of heap addresses of pthread_created thread"
+              },
+              "fullDescription": {
+                "text": "** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor\u0026#39;s position is \u0026#34;ASLR bypass itself is not a vulnerability.\u0026#34;"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-1010025",
+              "help": {
+                "text": "Vulnerability CVE-2019-1010025\nSeverity: LOW\nPackage: libc6\nFixed Version: \nLink: [CVE-2019-1010025](https://avd.aquasec.com/nvd/cve-2019-1010025)\n** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\"",
+                "markdown": "**Vulnerability CVE-2019-1010025**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|libc6||[CVE-2019-1010025](https://avd.aquasec.com/nvd/cve-2019-1010025)|\n\n** DISPUTED ** GNU Libc current is affected by: Mitigation bypass. The impact is: Attacker may guess the heap addresses of pthread_created thread. The component is: glibc. NOTE: the vendor's position is \"ASLR bypass itself is not a vulnerability.\""
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2019-9192",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "glibc: uncontrolled recursion in function check_dst_limits_calc_pos_1 in posix/regexec.c"
+              },
+              "fullDescription": {
+                "text": "** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by \u0026#39;(|)(\\\\1\\\\1)*\u0026#39; in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2019-9192",
+              "help": {
+                "text": "Vulnerability CVE-2019-9192\nSeverity: LOW\nPackage: libc6\nFixed Version: \nLink: [CVE-2019-9192](https://avd.aquasec.com/nvd/cve-2019-9192)\n** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern.",
+                "markdown": "**Vulnerability CVE-2019-9192**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|libc6||[CVE-2019-9192](https://avd.aquasec.com/nvd/cve-2019-9192)|\n\n** DISPUTED ** In the GNU C Library (aka glibc or libc6) through 2.29, check_dst_limits_calc_pos_1 in posix/regexec.c has Uncontrolled Recursion, as demonstrated by '(|)(\\\\1\\\\1)*' in grep, a different issue than CVE-2018-20796. NOTE: the software maintainer disputes that this is a vulnerability because the behavior occurs only with a crafted pattern."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-0286",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "[openssl: X.400 address type confusion in X.509 GeneralName]"
+              },
+              "fullDescription": {
+                "text": "X.400 address type confusion in X.509 GeneralName"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-0286",
+              "help": {
+                "text": "Vulnerability CVE-2023-0286\nSeverity: HIGH\nPackage: openssl\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2023-0286](https://avd.aquasec.com/nvd/cve-2023-0286)\nX.400 address type confusion in X.509 GeneralName",
+                "markdown": "**Vulnerability CVE-2023-0286**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|openssl|1.1.1n-0+deb11u4|[CVE-2023-0286](https://avd.aquasec.com/nvd/cve-2023-0286)|\n\nX.400 address type confusion in X.509 GeneralName"
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2022-2097",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: AES OCB fails to encrypt some bytes"
+              },
+              "fullDescription": {
+                "text": "AES OCB mode for 32-bit x86 platforms using the AES-NI assembly optimised implementation will not encrypt the entirety of the data under some circumstances. This could reveal sixteen bytes of data that was preexisting in the memory that wasn\u0026#39;t written. In the special case of \u0026#34;in place\u0026#34; encryption, sixteen bytes of the plaintext would be revealed. Since OpenSSL does not support OCB based cipher suites for TLS and DTLS, they are both unaffected. Fixed in OpenSSL 3.0.5 (Affected 3.0.0-3.0.4). Fixed in OpenSSL 1.1.1q (Affected 1.1.1-1.1.1p)."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2022-2097",
+              "help": {
+                "text": "Vulnerability CVE-2022-2097\nSeverity: MEDIUM\nPackage: openssl\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-2097](https://avd.aquasec.com/nvd/cve-2022-2097)\nAES OCB mode for 32-bit x86 platforms using the AES-NI assembly optimised implementation will not encrypt the entirety of the data under some circumstances. This could reveal sixteen bytes of data that was preexisting in the memory that wasn't written. In the special case of \"in place\" encryption, sixteen bytes of the plaintext would be revealed. Since OpenSSL does not support OCB based cipher suites for TLS and DTLS, they are both unaffected. Fixed in OpenSSL 3.0.5 (Affected 3.0.0-3.0.4). Fixed in OpenSSL 1.1.1q (Affected 1.1.1-1.1.1p).",
+                "markdown": "**Vulnerability CVE-2022-2097**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1n-0+deb11u4|[CVE-2022-2097](https://avd.aquasec.com/nvd/cve-2022-2097)|\n\nAES OCB mode for 32-bit x86 platforms using the AES-NI assembly optimised implementation will not encrypt the entirety of the data under some circumstances. This could reveal sixteen bytes of data that was preexisting in the memory that wasn't written. In the special case of \"in place\" encryption, sixteen bytes of the plaintext would be revealed. Since OpenSSL does not support OCB based cipher suites for TLS and DTLS, they are both unaffected. Fixed in OpenSSL 3.0.5 (Affected 3.0.0-3.0.4). Fixed in OpenSSL 1.1.1q (Affected 1.1.1-1.1.1p)."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "5.3",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2022-4304",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "[openssl: Timing Oracle in RSA Decryption]"
+              },
+              "fullDescription": {
+                "text": "Timing Oracle in RSA Decryption"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2022-4304",
+              "help": {
+                "text": "Vulnerability CVE-2022-4304\nSeverity: MEDIUM\nPackage: openssl\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-4304](https://avd.aquasec.com/nvd/cve-2022-4304)\nTiming Oracle in RSA Decryption",
+                "markdown": "**Vulnerability CVE-2022-4304**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1n-0+deb11u4|[CVE-2022-4304](https://avd.aquasec.com/nvd/cve-2022-4304)|\n\nTiming Oracle in RSA Decryption"
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "5.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2022-4450",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "[openssl: Double free after calling PEM_read_bio_ex]"
+              },
+              "fullDescription": {
+                "text": "Double free after calling PEM_read_bio_ex"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2022-4450",
+              "help": {
+                "text": "Vulnerability CVE-2022-4450\nSeverity: MEDIUM\nPackage: openssl\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-4450](https://avd.aquasec.com/nvd/cve-2022-4450)\nDouble free after calling PEM_read_bio_ex",
+                "markdown": "**Vulnerability CVE-2022-4450**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1n-0+deb11u4|[CVE-2022-4450](https://avd.aquasec.com/nvd/cve-2022-4450)|\n\nDouble free after calling PEM_read_bio_ex"
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "5.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-0215",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "[openssl: Use-after-free following BIO_new_NDEF]"
+              },
+              "fullDescription": {
+                "text": "Use-after-free following BIO_new_NDEF"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-0215",
+              "help": {
+                "text": "Vulnerability CVE-2023-0215\nSeverity: MEDIUM\nPackage: openssl\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2023-0215](https://avd.aquasec.com/nvd/cve-2023-0215)\nUse-after-free following BIO_new_NDEF",
+                "markdown": "**Vulnerability CVE-2023-0215**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|openssl|1.1.1n-0+deb11u4|[CVE-2023-0215](https://avd.aquasec.com/nvd/cve-2023-0215)|\n\nUse-after-free following BIO_new_NDEF"
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "5.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "MEDIUM"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2007-6755",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "Dual_EC_DRBG: weak pseudo random number generator"
+              },
+              "fullDescription": {
+                "text": "The NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \u0026#34;skeleton key\u0026#34; values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2007-6755",
+              "help": {
+                "text": "Vulnerability CVE-2007-6755\nSeverity: LOW\nPackage: openssl\nFixed Version: \nLink: [CVE-2007-6755](https://avd.aquasec.com/nvd/cve-2007-6755)\nThe NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \"skeleton key\" values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE.",
+                "markdown": "**Vulnerability CVE-2007-6755**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|openssl||[CVE-2007-6755](https://avd.aquasec.com/nvd/cve-2007-6755)|\n\nThe NIST SP 800-90A default statement of the Dual Elliptic Curve Deterministic Random Bit Generation (Dual_EC_DRBG) algorithm contains point Q constants with a possible relationship to certain \"skeleton key\" values, which might allow context-dependent attackers to defeat cryptographic protection mechanisms by leveraging knowledge of those values.  NOTE: this is a preliminary CVE for Dual_EC_DRBG; future research may provide additional details about point Q and associated attacks, and could potentially lead to a RECAST or REJECT of this CVE."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2010-0928",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: RSA authentication weakness"
+              },
+              "fullDescription": {
+                "text": "OpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \u0026#34;fault-based attack.\u0026#34;"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2010-0928",
+              "help": {
+                "text": "Vulnerability CVE-2010-0928\nSeverity: LOW\nPackage: openssl\nFixed Version: \nLink: [CVE-2010-0928](https://avd.aquasec.com/nvd/cve-2010-0928)\nOpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \"fault-based attack.\"",
+                "markdown": "**Vulnerability CVE-2010-0928**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|openssl||[CVE-2010-0928](https://avd.aquasec.com/nvd/cve-2010-0928)|\n\nOpenSSL 0.9.8i on the Gaisler Research LEON3 SoC on the Xilinx Virtex-II Pro FPGA uses a Fixed Width Exponentiation (FWE) algorithm for certain signature calculations, and does not verify the signature before providing it to a caller, which makes it easier for physically proximate attackers to determine the private key via a modified supply voltage for the microprocessor, related to a \"fault-based attack.\""
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "2.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "LOW"
+                ]
+              }
+            }
+          ],
+          "version": "0.37.1"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2010-4756",
+          "ruleIndex": 0,
+          "level": "note",
+          "message": {
+            "text": "Package: libc6\nInstalled Version: 2.31-13+deb11u5\nVulnerability CVE-2010-4756\nSeverity: LOW\nFixed Version: \nLink: [CVE-2010-4756](https://avd.aquasec.com/nvd/cve-2010-4756)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libc6@2.31-13+deb11u5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2018-20796",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "Package: libc6\nInstalled Version: 2.31-13+deb11u5\nVulnerability CVE-2018-20796\nSeverity: LOW\nFixed Version: \nLink: [CVE-2018-20796](https://avd.aquasec.com/nvd/cve-2018-20796)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libc6@2.31-13+deb11u5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2019-1010022",
+          "ruleIndex": 2,
+          "level": "note",
+          "message": {
+            "text": "Package: libc6\nInstalled Version: 2.31-13+deb11u5\nVulnerability CVE-2019-1010022\nSeverity: LOW\nFixed Version: \nLink: [CVE-2019-1010022](https://avd.aquasec.com/nvd/cve-2019-1010022)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libc6@2.31-13+deb11u5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2019-1010023",
+          "ruleIndex": 3,
+          "level": "note",
+          "message": {
+            "text": "Package: libc6\nInstalled Version: 2.31-13+deb11u5\nVulnerability CVE-2019-1010023\nSeverity: LOW\nFixed Version: \nLink: [CVE-2019-1010023](https://avd.aquasec.com/nvd/cve-2019-1010023)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libc6@2.31-13+deb11u5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2019-1010024",
+          "ruleIndex": 4,
+          "level": "note",
+          "message": {
+            "text": "Package: libc6\nInstalled Version: 2.31-13+deb11u5\nVulnerability CVE-2019-1010024\nSeverity: LOW\nFixed Version: \nLink: [CVE-2019-1010024](https://avd.aquasec.com/nvd/cve-2019-1010024)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libc6@2.31-13+deb11u5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2019-1010025",
+          "ruleIndex": 5,
+          "level": "note",
+          "message": {
+            "text": "Package: libc6\nInstalled Version: 2.31-13+deb11u5\nVulnerability CVE-2019-1010025\nSeverity: LOW\nFixed Version: \nLink: [CVE-2019-1010025](https://avd.aquasec.com/nvd/cve-2019-1010025)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libc6@2.31-13+deb11u5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2019-9192",
+          "ruleIndex": 6,
+          "level": "note",
+          "message": {
+            "text": "Package: libc6\nInstalled Version: 2.31-13+deb11u5\nVulnerability CVE-2019-9192\nSeverity: LOW\nFixed Version: \nLink: [CVE-2019-9192](https://avd.aquasec.com/nvd/cve-2019-9192)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libc6@2.31-13+deb11u5"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-0286",
+          "ruleIndex": 7,
+          "level": "error",
+          "message": {
+            "text": "Package: libssl1.1\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2023-0286\nSeverity: HIGH\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2023-0286](https://avd.aquasec.com/nvd/cve-2023-0286)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libssl1.1@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-2097",
+          "ruleIndex": 8,
+          "level": "warning",
+          "message": {
+            "text": "Package: libssl1.1\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2022-2097\nSeverity: MEDIUM\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-2097](https://avd.aquasec.com/nvd/cve-2022-2097)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libssl1.1@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-4304",
+          "ruleIndex": 9,
+          "level": "warning",
+          "message": {
+            "text": "Package: libssl1.1\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2022-4304\nSeverity: MEDIUM\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-4304](https://avd.aquasec.com/nvd/cve-2022-4304)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libssl1.1@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-4450",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Package: libssl1.1\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2022-4450\nSeverity: MEDIUM\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-4450](https://avd.aquasec.com/nvd/cve-2022-4450)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libssl1.1@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-0215",
+          "ruleIndex": 11,
+          "level": "warning",
+          "message": {
+            "text": "Package: libssl1.1\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2023-0215\nSeverity: MEDIUM\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2023-0215](https://avd.aquasec.com/nvd/cve-2023-0215)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libssl1.1@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2007-6755",
+          "ruleIndex": 12,
+          "level": "note",
+          "message": {
+            "text": "Package: libssl1.1\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2007-6755\nSeverity: LOW\nFixed Version: \nLink: [CVE-2007-6755](https://avd.aquasec.com/nvd/cve-2007-6755)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libssl1.1@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2010-0928",
+          "ruleIndex": 13,
+          "level": "note",
+          "message": {
+            "text": "Package: libssl1.1\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2010-0928\nSeverity: LOW\nFixed Version: \nLink: [CVE-2010-0928](https://avd.aquasec.com/nvd/cve-2010-0928)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: libssl1.1@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-0286",
+          "ruleIndex": 7,
+          "level": "error",
+          "message": {
+            "text": "Package: openssl\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2023-0286\nSeverity: HIGH\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2023-0286](https://avd.aquasec.com/nvd/cve-2023-0286)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: openssl@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-2097",
+          "ruleIndex": 8,
+          "level": "warning",
+          "message": {
+            "text": "Package: openssl\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2022-2097\nSeverity: MEDIUM\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-2097](https://avd.aquasec.com/nvd/cve-2022-2097)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: openssl@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-4304",
+          "ruleIndex": 9,
+          "level": "warning",
+          "message": {
+            "text": "Package: openssl\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2022-4304\nSeverity: MEDIUM\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-4304](https://avd.aquasec.com/nvd/cve-2022-4304)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: openssl@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2022-4450",
+          "ruleIndex": 10,
+          "level": "warning",
+          "message": {
+            "text": "Package: openssl\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2022-4450\nSeverity: MEDIUM\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2022-4450](https://avd.aquasec.com/nvd/cve-2022-4450)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: openssl@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-0215",
+          "ruleIndex": 11,
+          "level": "warning",
+          "message": {
+            "text": "Package: openssl\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2023-0215\nSeverity: MEDIUM\nFixed Version: 1.1.1n-0+deb11u4\nLink: [CVE-2023-0215](https://avd.aquasec.com/nvd/cve-2023-0215)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: openssl@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2007-6755",
+          "ruleIndex": 12,
+          "level": "note",
+          "message": {
+            "text": "Package: openssl\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2007-6755\nSeverity: LOW\nFixed Version: \nLink: [CVE-2007-6755](https://avd.aquasec.com/nvd/cve-2007-6755)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: openssl@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2010-0928",
+          "ruleIndex": 13,
+          "level": "note",
+          "message": {
+            "text": "Package: openssl\nInstalled Version: 1.1.1n-0+deb11u3\nVulnerability CVE-2010-0928\nSeverity: LOW\nFixed Version: \nLink: [CVE-2010-0928](https://avd.aquasec.com/nvd/cve-2010-0928)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ortelius/ms-compitem-crud",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "ortelius/ms-compitem-crud: openssl@1.1.1n-0+deb11u3"
+              }
+            }
+          ]
+        }
+      ],
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "file:///"
+        }
+      }
+    }
+  ]
+}
