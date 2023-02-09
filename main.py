@@ -53,8 +53,6 @@ if (validateuser_url is None):
 engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host + ":" + db_port + "/" + db_name, pool_pre_ping=True)
 
 # health check endpoint
-
-
 class StatusMsg(BaseModel):
     status: str
     service_name: Optional[str] = None
