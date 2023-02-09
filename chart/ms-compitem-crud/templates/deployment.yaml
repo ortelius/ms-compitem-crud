@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: {{ include "ms-compitem-crud.name" . }}
-          image: "{{ .Values.DockerRepo }}:{{ .Values.DockerTag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: Always
           env: 
             - name: DB_USER

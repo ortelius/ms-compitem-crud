@@ -2,5 +2,5 @@ description: Dependency Packages
 icon: https://ortelius.github.io/ortelius-charts/logo.png
 name: ms-compitem-crud
 type: application
-version: 10.0.3
-appVersion: 10.0.3
+version: 10.0.4
+appVersion: 10.0.4
