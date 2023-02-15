@@ -14,7 +14,7 @@ COPY --from=builder /home/nonroot/.local /home/nonroot/.local
 
 WORKDIR /app
 
-EXPOSE 80
+EXPOSE 8080
 ENV PATH=$PATH:/home/nonroot/.local/bin
 
-ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
