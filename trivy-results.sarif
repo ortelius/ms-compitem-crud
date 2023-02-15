@@ -8,11 +8,67 @@
           "fullName": "Trivy Vulnerability Scanner",
           "informationUri": "https://github.com/aquasecurity/trivy",
           "name": "Trivy",
-          "rules": [],
-          "version": "0.37.1"
+          "rules": [
+            {
+              "id": "GHSA-74m5-2c7w-9w3x",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "MultipartParser denial of service with too many fields or files"
+              },
+              "fullDescription": {
+                "text": "### Impact\n\nThe `MultipartParser` using the package `python-multipart` accepts an unlimited number of multipart parts (form fields or files).\n\nProcessing too many parts results in high CPU usage and high memory usage, eventually leading to an \u0026lt;abbr title=\u0026#34;out of memory\u0026#34;\u0026gt;OOM\u0026lt;/abbr\u0026gt; process kill.\n\nThis can be triggered by sending too many small form fields with no content, or too many empty files.\n\nFor this to take effect application code has to:\n\n* Have `python-multipart` installed and\n* call `request.form()`\n  * or via another framework like FastAPI, using form field parameters or `UploadFile` parameters, which in turn calls `request.form()`.\n\n### Patches\n\nThe vulnerability is solved in Starlette 0.25.0 by making the maximum fields and files customizable and with a sensible default (1000). \n\nApplications will be secure by just upgrading their Starlette version to 0.25.0 (or FastAPI to 0.92.0).\n\nIf application code needs to customize the new max field and file number, there are new `request.form()` parameters (with the default values):\n\n* `max_files=1000`\n* `max_fields=1000`\n\n### Workarounds\n\nApplications that don\u0026#39;t install `python-multipart` or that don\u0026#39;t use form fields are safe.\n\nIn older versions, it\u0026#39;s also possible to instead of calling `request.form()` call `request.stream()` and parse the form data in internal code.\n\nIn most cases, the best solution is to upgrade the Starlette version.\n\n### References\n\nThis was reported in private by @das7pad via internal email. He also coordinated the fix across multiple frameworks and parsers.\n\nThe details about how `multipart/form-data` is structured and parsed are in the [RFC 7578](https://www.rfc-editor.org/rfc/rfc7578).\n"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "helpUri": "https://github.com/advisories/GHSA-74m5-2c7w-9w3x",
+              "help": {
+                "text": "Vulnerability GHSA-74m5-2c7w-9w3x\nSeverity: MEDIUM\nPackage: starlette\nFixed Version: 0.25.0\nLink: [GHSA-74m5-2c7w-9w3x](https://github.com/advisories/GHSA-74m5-2c7w-9w3x)\n### Impact\n\nThe `MultipartParser` using the package `python-multipart` accepts an unlimited number of multipart parts (form fields or files).\n\nProcessing too many parts results in high CPU usage and high memory usage, eventually leading to an \u003cabbr title=\"out of memory\"\u003eOOM\u003c/abbr\u003e process kill.\n\nThis can be triggered by sending too many small form fields with no content, or too many empty files.\n\nFor this to take effect application code has to:\n\n* Have `python-multipart` installed and\n* call `request.form()`\n  * or via another framework like FastAPI, using form field parameters or `UploadFile` parameters, which in turn calls `request.form()`.\n\n### Patches\n\nThe vulnerability is solved in Starlette 0.25.0 by making the maximum fields and files customizable and with a sensible default (1000). \n\nApplications will be secure by just upgrading their Starlette version to 0.25.0 (or FastAPI to 0.92.0).\n\nIf application code needs to customize the new max field and file number, there are new `request.form()` parameters (with the default values):\n\n* `max_files=1000`\n* `max_fields=1000`\n\n### Workarounds\n\nApplications that don't install `python-multipart` or that don't use form fields are safe.\n\nIn older versions, it's also possible to instead of calling `request.form()` call `request.stream()` and parse the form data in internal code.\n\nIn most cases, the best solution is to upgrade the Starlette version.\n\n### References\n\nThis was reported in private by @das7pad via internal email. He also coordinated the fix across multiple frameworks and parsers.\n\nThe details about how `multipart/form-data` is structured and parsed are in the [RFC 7578](https://www.rfc-editor.org/rfc/rfc7578).\n",
+                "markdown": "**Vulnerability GHSA-74m5-2c7w-9w3x**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|starlette|0.25.0|[GHSA-74m5-2c7w-9w3x](https://github.com/advisories/GHSA-74m5-2c7w-9w3x)|\n\n### Impact\n\nThe `MultipartParser` using the package `python-multipart` accepts an unlimited number of multipart parts (form fields or files).\n\nProcessing too many parts results in high CPU usage and high memory usage, eventually leading to an \u003cabbr title=\"out of memory\"\u003eOOM\u003c/abbr\u003e process kill.\n\nThis can be triggered by sending too many small form fields with no content, or too many empty files.\n\nFor this to take effect application code has to:\n\n* Have `python-multipart` installed and\n* call `request.form()`\n  * or via another framework like FastAPI, using form field parameters or `UploadFile` parameters, which in turn calls `request.form()`.\n\n### Patches\n\nThe vulnerability is solved in Starlette 0.25.0 by making the maximum fields and files customizable and with a sensible default (1000). \n\nApplications will be secure by just upgrading their Starlette version to 0.25.0 (or FastAPI to 0.92.0).\n\nIf application code needs to customize the new max field and file number, there are new `request.form()` parameters (with the default values):\n\n* `max_files=1000`\n* `max_fields=1000`\n\n### Workarounds\n\nApplications that don't install `python-multipart` or that don't use form fields are safe.\n\nIn older versions, it's also possible to instead of calling `request.form()` call `request.stream()` and parse the form data in internal code.\n\nIn most cases, the best solution is to upgrade the Starlette version.\n\n### References\n\nThis was reported in private by @das7pad via internal email. He also coordinated the fix across multiple frameworks and parsers.\n\nThe details about how `multipart/form-data` is structured and parsed are in the [RFC 7578](https://www.rfc-editor.org/rfc/rfc7578).\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "5.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "MEDIUM"
+                ]
+              }
+            }
+          ],
+          "version": "0.37.2"
         }
       },
-      "results": [],
+      "results": [
+        {
+          "ruleId": "GHSA-74m5-2c7w-9w3x",
+          "ruleIndex": 0,
+          "level": "warning",
+          "message": {
+            "text": "Package: starlette\nInstalled Version: 0.22.0\nVulnerability GHSA-74m5-2c7w-9w3x\nSeverity: MEDIUM\nFixed Version: 0.25.0\nLink: [GHSA-74m5-2c7w-9w3x](https://github.com/advisories/GHSA-74m5-2c7w-9w3x)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "home/nonroot/.local/lib/python3.11/site-packages/starlette-0.22.0.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "home/nonroot/.local/lib/python3.11/site-packages/starlette-0.22.0.dist-info/METADATA: starlette@0.22.0"
+              }
+            }
+          ]
+        }
+      ],
       "columnKind": "utf16CodeUnits",
       "originalUriBaseIds": {
         "ROOTPATH": {
