@@ -34,7 +34,7 @@ spec:
         - name: {{ include "ms-compitem-crud.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: Always
-          env: 
+          env:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
@@ -62,11 +62,11 @@ spec:
                   key: DBName
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
           livenessProbe:
             httpGet:
               path: /health
-              port: 80
+              port: 8080
             initialDelaySeconds: 60
             periodSeconds: 60
----   
+---
