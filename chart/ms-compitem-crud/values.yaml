@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
   repository: quay.io/ortelius/ms-compitem-crud
-  tag: main-v10.0.11-g60d730
-  sha: sha256:7f98223d29e3170f8d463af4fbc8fe31054216becd42345dcdc0d4139670fe2d
+  tag: main-v10.0.12-gedc298
+  sha: sha256:2c0f2a60582fba38b9242a42b8d5a65b5b742a20dba52c87b15174f8a70c09b2
   pullPolicy: Always
