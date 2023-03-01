@@ -25,7 +25,7 @@ import requests
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from pydantic import BaseModel
-from sqlalchemy import create_engine
+from sqlalchemy import sql, create_engine
 from sqlalchemy.exc import InterfaceError, OperationalError, StatementError
 
 # Init Globals
@@ -111,28 +111,28 @@ class CompItemModel(BaseModel):
     serviceowner: Optional[str] = None
     serviceowneremail: Optional[str] = None
     serviceownerid: Optional[str] = None
-    serviceownerphone: Optional[str] = None 
+    serviceownerphone: Optional[str] = None
     slackchannel: Optional[str] = None
     status: Optional[str] = None
     summary: Optional[str] = None
     targetdirectory: Optional[str] = None
     xpos: Optional[int] = None
     ypos: Optional[int] = None
-     
+
 class CompItemModelList(BaseModel):
     data: List[CompItemModel]
-    
+
 class Message(BaseModel):
     detail: str
-    
-   
-@app.get('/msapi/compitem')  
+
+
+@app.get('/msapi/compitem')
 async def get_compitem(request: Request, compitemid:int, comptype: Optional[str] = '') -> list[CompItemModel]:
     try:
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
-    
+
         if (result.status_code != status.HTTP_200_OK):
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
     except Exception as err:
@@ -149,57 +149,57 @@ async def get_compitem(request: Request, compitemid:int, comptype: Optional[str]
                     authorized = False      # init to not authorized
                     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-                    sql = """select a.compid, a.id, a.name, a.rollup, a.rollback, fulldomain(r.domainid, r.name) "repository", target "targetdirectory", a.xpos, a.ypos,
+                    sqlstmt = """select a.compid, a.id, a.name, a.rollup, a.rollback, fulldomain(r.domainid, r.name) "repository", target "targetdirectory", a.xpos, a.ypos,
                                 kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
                                 gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
-                                chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone", 
+                                chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone",
                                 slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
-                                from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c, dm.dm_repository r 
+                                from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c, dm.dm_repository r
                                 where a.compid = b.id and b.ownerid = c.id and a.repositoryid = r.id and a.id = %s
                             union
                                 select a.compid, a.id, a.name, a.rollup, a.rollback, null, target "targetdirectory", a.xpos, a.ypos,
                                 kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
                                 gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
-                                chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone", 
+                                chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone",
                                 slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
                                 from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c
                                 where a.compid = b.id and b.ownerid = c.id and a.repositoryid is null and a.id = %s"""
-            
+
                     params = (str(compitemid),str(compitemid),)
-                    cursor.execute(sql, params)
+                    cursor.execute(sql.text(sqlstmt), params)
                     result = cursor.fetchall()
                     if (not result):
                         if (comptype == 'rf_database'):
-                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
+                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None),
                                         ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
                                         ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
-                                        ('rollup', 1), ('rollback', 0), ('repository', None), 
+                                        ('rollup', 1), ('rollback', 0), ('repository', None),
                                         ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
-                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
-                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None), 
+                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None),
+                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None),
                                         ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
                         elif (comptype == 'rb_database'):
-                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
+                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None),
                                         ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
                                         ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
-                                        ('rollup', 0), ('rollback', 1), ('repository', None), 
+                                        ('rollup', 0), ('rollback', 1), ('repository', None),
                                         ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
-                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
-                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None), 
+                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None),
+                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None),
                                         ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
                         else:
-                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None), 
+                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None),
                                         ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
                                         ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
-                                        ('rollup', 0), ('rollback', 0), ('repository', None), 
+                                        ('rollup', 0), ('rollback', 0), ('repository', None),
                                         ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
-                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None), 
-                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None), 
+                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None),
+                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None),
                                         ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
                     cursor.close()
                     conn.close()
                 return result
-            
+
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
                     sleep_for = 0.2
@@ -209,13 +209,13 @@ async def get_compitem(request: Request, compitemid:int, comptype: Optional[str]
                             ex, sleep_for, attempt, no_of_retry
                         )
                     )
-                    #200ms of sleep time in cons. retry calls 
-                    sleep(sleep_for) 
+                    #200ms of sleep time in cons. retry calls
+                    sleep(sleep_for)
                     attempt += 1
                     continue
                 else:
                     raise
-                    
+
     except HTTPException:
         raise
     except Exception as err:
@@ -232,7 +232,7 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
-    
+
         if (result.status_code != status.HTTP_200_OK):
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
     except Exception as err:
@@ -243,11 +243,11 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
         for col in compItemList:
             row = (col.id, col.compid, col.status, col.buildid, col.buildurl, col.dockersha, col.dockertag, col.gitcommit, col.gitrepo, col.giturl)  # this will be changed
             data_list.append(row)
-        
+
         records_list_template = ','.join(['%s'] * len(data_list))
-        sql = 'INSERT INTO dm.dm_componentitem(id, compid, status, buildid, buildurl, dockersha, dockertag, gitcommit, gitrepo, giturl) \
+        sqlstmt = 'INSERT INTO dm.dm_componentitem(id, compid, status, buildid, buildurl, dockersha, dockertag, gitcommit, gitrepo, giturl) \
                             VALUES {}'.format(records_list_template)
-                            
+
         #Retry logic for failed query
         no_of_retry = db_conn_retry
         attempt = 1;
@@ -256,20 +256,20 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
                 with engine.connect() as connection:
                     conn = connection.connection
                     cursor = conn.cursor()
-                    cursor.execute(sql, data_list)
+                    cursor.execute(sql.text(sqlstmt), data_list)
                     # commit the changes to the database
                     rows_inserted = cursor.rowcount
                     # Commit the changes to the database
                     conn.commit()
                     conn.close()
-                    
+
                     if rows_inserted > 0:
                         response.status_code = status.HTTP_201_CREATED
                         return {"message": 'components created succesfully'}
-                
+
                     response.status_code = status.HTTP_200_OK
                     return {"message": 'components not created'}
-                
+
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
                     sleep_for = 0.2
@@ -279,13 +279,13 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
                             ex, sleep_for, attempt, no_of_retry
                         )
                     )
-                    #200ms of sleep time in cons. retry calls 
-                    sleep(sleep_for) 
+                    #200ms of sleep time in cons. retry calls
+                    sleep(sleep_for)
                     attempt += 1
                     continue
                 else:
                     raise
-                
+
     except HTTPException:
         raise
     except Exception as err:
@@ -300,14 +300,14 @@ async def delete_compitem(request: Request, compid: int):
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
-    
+
         if (result.status_code != status.HTTP_200_OK):
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
     except Exception as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
     try:
-        
+
         #Retry logic for failed query
         no_of_retry = db_conn_retry
         attempt = 1;
@@ -316,19 +316,19 @@ async def delete_compitem(request: Request, compid: int):
                 with engine.connect() as connection:
                     conn = connection.connection
                     cursor = conn.cursor()
-            
+
                     sql1 = "DELETE from dm.dm_compitemprops where compitemid in (select id from dm.dm_componentitem where compid = " + str(compid) + ")"
                     sql2 = "DELETE from dm.dm_componentitem where compid=" + str(compid)
                     rows_deleted = 0
-                    cursor.execute(sql1)
-                    cursor.execute(sql2)
+                    cursor.execute(sql.text(sql1))
+                    cursor.execute(sql.text(sql2))
                     rows_deleted = cursor.rowcount
                     # Commit the changes to the database
                     conn.commit()
-            
+
                 # response.status_code = status.HTTP_200_OK
                 return {"message": 'component deleted succesfully'}
-                
+
             except (InterfaceError, OperationalError) as ex:
                 sleep_for = 0.2
                 if attempt < no_of_retry:
@@ -338,13 +338,13 @@ async def delete_compitem(request: Request, compid: int):
                             ex, sleep_for, attempt, no_of_retry
                         )
                     )
-                    #200ms of sleep time in cons. retry calls 
-                    sleep(sleep_for) 
+                    #200ms of sleep time in cons. retry calls
+                    sleep(sleep_for)
                     attempt += 1
                     continue
                 else:
                     raise
-                
+
     except HTTPException:
         raise
     except Exception as err:
@@ -359,19 +359,19 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
         result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
         if (result is None):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
-    
+
         if (result.status_code != status.HTTP_200_OK):
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
     except Exception as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
     try:
-        
+
         data_list = []
         for col in compitemList:
             row = (col.compid, col.status, col.buildid, col.buildurl, col.dockersha, col.dockertag, col.gitcommit, col.gitrepo, col.giturl, col.id)  # this will be changed
             data_list.append(row)
-            
+
         #Retry logic for failed query
         no_of_retry = db_conn_retry
         attempt = 1;
@@ -382,19 +382,19 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
                     cursor = conn.cursor()
                     # # execute the INSERT statement
                     # records_list_template = ','.join(['%s'] * len(data_list))
-                    sql = 'UPDATE dm.dm_componentitem set compid=%s, status=%s, buildid=%s, buildurl=%s, dockersha=%s, dockertag=%s, gitcommit=%s, gitrepo=%s, giturl=%s \
+                    sqlstmt = 'UPDATE dm.dm_componentitem set compid=%s, status=%s, buildid=%s, buildurl=%s, dockersha=%s, dockertag=%s, gitcommit=%s, gitrepo=%s, giturl=%s \
                     WHERE id = %s'
-                    cursor.executemany(sql, data_list)
+                    cursor.executemany(sql.text(sqlstmt), data_list)
                     # commit the changes to the database
                     rows_inserted = cursor.rowcount
                     # Commit the changes to the database
                     conn.commit()
-                    
+
                 if rows_inserted > 0:
                     return {"message": 'components updated succesfully'}
-        
+
                 return {"message": 'components not updated'}
-                
+
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
                     sleep_for = 0.2
@@ -404,16 +404,16 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
                             ex, sleep_for, attempt, no_of_retry
                         )
                     )
-                    #200ms of sleep time in cons. retry calls 
-                    sleep(sleep_for) 
+                    #200ms of sleep time in cons. retry calls
+                    sleep(sleep_for)
                     attempt += 1
                     continue
                 else:
                     raise
-                
+
     except Exception as err:
         print(err)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
-    
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5001)
