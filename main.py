@@ -166,7 +166,7 @@ async def get_compitem(request: Request, compitemid:int, comptype: Optional[str]
                                 where a.compid = b.id and b.ownerid = c.id and a.repositoryid is null and a.id = %s"""
 
                     params = (str(compitemid),str(compitemid),)
-                    cursor.execute(sql.text(sqlstmt), params)
+                    cursor.execute(sqlstmt, params)
                     result = cursor.fetchall()
                     if (not result):
                         if (comptype == 'rf_database'):
@@ -256,7 +256,7 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
                 with engine.connect() as connection:
                     conn = connection.connection
                     cursor = conn.cursor()
-                    cursor.execute(sql.text(sqlstmt), data_list)
+                    cursor.execute(sqlstmt, data_list)
                     # commit the changes to the database
                     rows_inserted = cursor.rowcount
                     # Commit the changes to the database
@@ -320,8 +320,8 @@ async def delete_compitem(request: Request, compid: int):
                     sql1 = "DELETE from dm.dm_compitemprops where compitemid in (select id from dm.dm_componentitem where compid = " + str(compid) + ")"
                     sql2 = "DELETE from dm.dm_componentitem where compid=" + str(compid)
                     rows_deleted = 0
-                    cursor.execute(sql.text(sql1))
-                    cursor.execute(sql.text(sql2))
+                    cursor.execute(sql1)
+                    cursor.execute(sql2)
                     rows_deleted = cursor.rowcount
                     # Commit the changes to the database
                     conn.commit()
@@ -384,7 +384,7 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
                     # records_list_template = ','.join(['%s'] * len(data_list))
                     sqlstmt = 'UPDATE dm.dm_componentitem set compid=%s, status=%s, buildid=%s, buildurl=%s, dockersha=%s, dockertag=%s, gitcommit=%s, gitrepo=%s, giturl=%s \
                     WHERE id = %s'
-                    cursor.executemany(sql.text(sqlstmt), data_list)
+                    cursor.executemany(sqlstmt, data_list)
                     # commit the changes to the database
                     rows_inserted = cursor.rowcount
                     # Commit the changes to the database
