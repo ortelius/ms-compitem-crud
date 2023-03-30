@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/python:3.11.2-dev@sha256:da9fe251d93cd4aec9febfac7d2ab78b9af986713bde9cadc135524ef6f84cb7 AS builder
+FROM cgr.dev/chainguard/python:3.11.2-dev@sha256:90ed2f55062987609b2ee2682cfe2a9cf8e3a01fd1028d0559cd6023a2313d76 AS builder
 COPY . /app
 RUN cd /app && pip install -r requirements.txt
 
