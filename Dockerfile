@@ -1,10 +1,10 @@
-FROM cgr.dev/chainguard/python:3.11.2-dev@sha256:7b654572d3a8074ef72e7cd6165064c35b80e88e408cfb5e7981d94218aba697 AS builder
+FROM cgr.dev/chainguard/python:3.11.2-dev@sha256:9ddc214ee794eefa95d9ad2b9307b83df643fab16c63946b09ee391630ecdf01 AS builder
 COPY . /app
 
 WORKDIR /app
 RUN python -m pip install --no-cache-dir -r requirements.txt --require-hashes --no-warn-script-location;
 
-FROM cgr.dev/chainguard/python:3.11.2@sha256:7a0724c1aa6d9a53b6719639a20fafdfe431ebe84fe0159519119c2b337ae455
+FROM cgr.dev/chainguard/python:3.11.2@sha256:54b8f7aa6420173981c82ab19009ab3ba8ae2b0aec59f2910379682790cb8684
 USER nonroot
 ENV DB_HOST localhost
 ENV DB_NAME postgres
