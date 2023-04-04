@@ -15,27 +15,21 @@
 import logging
 import os
 import socket
-from collections import OrderedDict
 from time import sleep
-from typing import List, Optional
+from typing import Optional
 
-import psycopg2
-import psycopg2.extras
 import requests
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response, status
-from pydantic import BaseModel
-from sqlalchemy import sql, create_engine
-from sqlalchemy.exc import InterfaceError, OperationalError, StatementError
+from pydantic import BaseModel  # pylint: disable=E0611
+from sqlalchemy import create_engine
+from sqlalchemy.exc import InterfaceError, OperationalError
 
 # Init Globals
-service_name = 'ortelius-ms-compitem-crud'
-db_conn_retry = 3
+SERVICE_NAME = "ortelius-ms-compitem-crud"
+DB_CONN_RETRY = 3
 
-app = FastAPI(
-    title=service_name,
-    description=service_name
-)
+app = FastAPI(title=SERVICE_NAME, description=SERVICE_NAME)
 
 # Init db connection
 db_host = os.getenv("DB_HOST", "localhost")
@@ -43,38 +37,45 @@ db_name = os.getenv("DB_NAME", "postgres")
 db_user = os.getenv("DB_USER", "postgres")
 db_pass = os.getenv("DB_PASS", "postgres")
 db_port = os.getenv("DB_PORT", "5432")
-validateuser_url = os.getenv('VALIDATEUSER_URL', None )
+validateuser_url = os.getenv("VALIDATEUSER_URL", "")
 
-if (validateuser_url is None):
-    validateuser_host = os.getenv('MS_VALIDATE_USER_SERVICE_HOST', '127.0.0.1')
+if len(validateuser_url) == 0:
+    validateuser_host = os.getenv("MS_VALIDATE_USER_SERVICE_HOST", "127.0.0.1")
     host = socket.gethostbyaddr(validateuser_host)[0]
-    validateuser_url = 'http://' + host + ':' + str(os.getenv('MS_VALIDATE_USER_SERVICE_PORT', 80))
+    validateuser_url = "http://" + host + ":" + str(os.getenv("MS_VALIDATE_USER_SERVICE_PORT", "80"))
 
 engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host + ":" + db_port + "/" + db_name, pool_pre_ping=True)
+
 
 # health check endpoint
 class StatusMsg(BaseModel):
     status: str
-    service_name: Optional[str] = None
+    service_name: str
 
 
 @app.get("/health")
 async def health(response: Response) -> StatusMsg:
+    """
+    This health check end point used by Kubernetes
+    """
     try:
         with engine.connect() as connection:
             conn = connection.connection
             cursor = conn.cursor()
-            cursor.execute('SELECT 1')
+            cursor.execute("SELECT 1")
             if cursor.rowcount > 0:
-                return {"status": 'UP', "service_name": service_name}
+                return StatusMsg(status="UP", service_name=SERVICE_NAME)
             response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-            return {"status": 'DOWN'}
+            return StatusMsg(status="DOWN", service_name=SERVICE_NAME)
 
     except Exception as err:
         print(str(err))
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-        return {"status": 'DOWN'}
+        return StatusMsg(status="DOWN", service_name=SERVICE_NAME)
+
+
 # end health check
+
 
 class CompItemModel(BaseModel):
     compid: int
@@ -119,35 +120,29 @@ class CompItemModel(BaseModel):
     xpos: Optional[int] = None
     ypos: Optional[int] = None
 
-class CompItemModelList(BaseModel):
-    data: List[CompItemModel]
 
-class Message(BaseModel):
-    detail: str
-
-
-@app.get('/msapi/compitem')
-async def get_compitem(request: Request, compitemid:int, comptype: Optional[str] = '') -> list[CompItemModel]:
+@app.get("/msapi/compitem")
+async def get_compitem(request: Request, compitemid: int, comptype: Optional[str] = "") -> list[CompItemModel]:
     try:
-        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
-        if (result is None):
+        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies, timeout=5)
+        if result is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
 
-        if (result.status_code != status.HTTP_200_OK):
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+        if result.status_code != status.HTTP_200_OK:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
     except Exception as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
+    compitem_list = []
     try:
-        #Retry logic for failed query
-        no_of_retry = db_conn_retry
-        attempt = 1;
+        # Retry logic for failed query
+        no_of_retry = DB_CONN_RETRY
+        attempt = 1
         while True:
             try:
                 with engine.connect() as connection:
                     conn = connection.connection
-                    authorized = False      # init to not authorized
-                    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                    cursor = conn.cursor()
 
                     sqlstmt = """select a.compid, a.id, a.name, a.rollup, a.rollback, fulldomain(r.domainid, r.name) "repository", target "targetdirectory", a.xpos, a.ypos,
                                 kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
@@ -165,51 +160,70 @@ async def get_compitem(request: Request, compitemid:int, comptype: Optional[str]
                                 from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c
                                 where a.compid = b.id and b.ownerid = c.id and a.repositoryid is null and a.id = %s"""
 
-                    params = (str(compitemid),str(compitemid),)
+                    params = (
+                        str(compitemid),
+                        str(compitemid),
+                    )
                     cursor.execute(sqlstmt, params)
-                    result = cursor.fetchall()
-                    if (not result):
-                        if (comptype == 'rf_database'):
-                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None),
-                                        ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
-                                        ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
-                                        ('rollup', 1), ('rollback', 0), ('repository', None),
-                                        ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
-                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None),
-                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None),
-                                        ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
-                        elif (comptype == 'rb_database'):
-                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None),
-                                        ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
-                                        ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
-                                        ('rollup', 0), ('rollback', 1), ('repository', None),
-                                        ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
-                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None),
-                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None),
-                                        ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
+                    rows = cursor.fetchall()
+                    if not rows:
+                        cim = CompItemModel(compid=-1, id=compitemid)
+
+                        if comptype == "rf_database":
+                            cim.rollup = 1
+                            cim.rollback = 0
+                        elif comptype == "rb_database":
+                            cim.rollup = 0
+                            cim.rollback = 1
                         else:
-                            result = [OrderedDict([('compid', -1), ('id', compitemid), ('name', None),
-                                        ('serviceownerid', None), ('serviceowner', None), ('serviceowneremail', None), ('serviceownerphone', None),
-                                        ('slackchannel', None), ('discordchannel', None), ('hipchatchannel', None), ('pagerdutyurl', None), ('pagerdutybusinessurl', None),
-                                        ('rollup', 0), ('rollback', 0), ('repository', None),
-                                        ('targetdirectory', None), ('xpos', None), ('ypos', None),  ('kind', None), ('builddate', None), ('buildid', None), ('buildurl', None),
-                                        ('chartrepo', None), ('chartrepourl', None), ('chart', None), ('chartversion', None), ('chartnamespace', None),
-                                        ('dockerrepo', None), ('dockertag', None), ('dockersha', None),
-                                        ('gitcommit', None), ('gitrepo', None), ('gittag', None), ('giturl', None)])]
+                            cim.rollup = 0
+                            cim.rollback = 0
+                        compitem_list.append(cim)
+                    else:
+                        for row in rows:
+                            cim = CompItemModel(compid=row[0], id=row[1])
+                            cim.name = row[2]
+                            cim.serviceownerid = row[3]
+                            cim.serviceowner = row[4]
+                            cim.serviceowneremail = row[5]
+                            cim.serviceownerphone = row[6]
+                            cim.slackchannel = row[7]
+                            cim.discordchannel = row[8]
+                            cim.hipchatchannel = row[9]
+                            cim.pagerdutyurl = row[10]
+                            cim.pagerdutybusinessurl = row[11]
+                            cim.rollup = row[12]
+                            cim.rollback = row[13]
+                            cim.repository = row[14]
+                            cim.targetdirectory = row[15]
+                            cim.xpos = row[16]
+                            cim.ypos = row[17]
+                            cim.kind = row[18]
+                            cim.builddate = row[19]
+                            cim.buildid = row[20]
+                            cim.buildurl = row[21]
+                            cim.chartrepo = row[22]
+                            cim.chartrepourl = row[23]
+                            cim.chart = row[24]
+                            cim.chartversion = row[25]
+                            cim.chartnamespace = row[26]
+                            cim.dockerrepo = row[27]
+                            cim.dockertag = row[28]
+                            cim.dockersha = row[29]
+                            cim.gitcommit = row[30]
+                            cim.gitrepo = row[31]
+                            cim.gittag = row[32]
+                            cim.giturl = row[33]
+                            compitem_list.append(cim)
                     cursor.close()
                     conn.close()
-                return result
+                return compitem_list
 
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
                     sleep_for = 0.2
-                    logging.error(
-                        "Database connection error: {} - sleeping for {}s"
-                        " and will retry (attempt #{} of {})".format(
-                            ex, sleep_for, attempt, no_of_retry
-                        )
-                    )
-                    #200ms of sleep time in cons. retry calls
+                    logging.error("Database connection error: %s - sleeping for %d seconds and will retry (attempt #%d of %d)", ex, sleep_for, attempt, no_of_retry)
+                    # 200ms of sleep time in cons. retry calls
                     sleep(sleep_for)
                     attempt += 1
                     continue
@@ -223,34 +237,33 @@ async def get_compitem(request: Request, compitemid:int, comptype: Optional[str]
         # conn.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
+
 # Not implemented fully.  SQL query is not complete
 
-@app.post("/msapi/compitem")
-async def create_compitem(response: Response, request: Request, compItemList: List[CompItemModel]):
 
+@app.post("/msapi/compitem")
+async def create_compitem(response: Response, request: Request, compitem_list: list[CompItemModel]):
     try:
-        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
-        if (result is None):
+        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies, timeout=5)
+        if result is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
 
-        if (result.status_code != status.HTTP_200_OK):
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+        if result.status_code != status.HTTP_200_OK:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
     except Exception as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
     try:
         data_list = []
-        for col in compItemList:
+        for col in compitem_list:
             row = (col.id, col.compid, col.status, col.buildid, col.buildurl, col.dockersha, col.dockertag, col.gitcommit, col.gitrepo, col.giturl)  # this will be changed
             data_list.append(row)
 
-        records_list_template = ','.join(['%s'] * len(data_list))
-        sqlstmt = 'INSERT INTO dm.dm_componentitem(id, compid, status, buildid, buildurl, dockersha, dockertag, gitcommit, gitrepo, giturl) \
-                            VALUES {}'.format(records_list_template)
+        sqlstmt = "INSERT INTO dm.dm_componentitem(id, compid, status, buildid, buildurl, dockersha, dockertag, gitcommit, gitrepo, giturl) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-        #Retry logic for failed query
-        no_of_retry = db_conn_retry
-        attempt = 1;
+        # Retry logic for failed query
+        no_of_retry = DB_CONN_RETRY
+        attempt = 1
         while True:
             try:
                 with engine.connect() as connection:
@@ -265,21 +278,16 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
 
                     if rows_inserted > 0:
                         response.status_code = status.HTTP_201_CREATED
-                        return {"message": 'components created succesfully'}
+                        return {"message": "components created succesfully"}
 
                     response.status_code = status.HTTP_200_OK
-                    return {"message": 'components not created'}
+                    return {"message": "components not created"}
 
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
                     sleep_for = 0.2
-                    logging.error(
-                        "Database connection error: {} - sleeping for {}s"
-                        " and will retry (attempt #{} of {})".format(
-                            ex, sleep_for, attempt, no_of_retry
-                        )
-                    )
-                    #200ms of sleep time in cons. retry calls
+                    logging.error("Database connection error: %s - sleeping for %d seconds and will retry (attempt #%d of %d)", ex, sleep_for, attempt, no_of_retry)
+                    # 200ms of sleep time in cons. retry calls
                     sleep(sleep_for)
                     attempt += 1
                     continue
@@ -293,52 +301,45 @@ async def create_compitem(response: Response, request: Request, compItemList: Li
         # conn.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
+
 @app.delete("/msapi/compitem")
 async def delete_compitem(request: Request, compid: int):
-
     try:
-        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
-        if (result is None):
+        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies, timeout=5)
+        if result is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
 
-        if (result.status_code != status.HTTP_200_OK):
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+        if result.status_code != status.HTTP_200_OK:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
     except Exception as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
     try:
-
-        #Retry logic for failed query
-        no_of_retry = db_conn_retry
-        attempt = 1;
+        # Retry logic for failed query
+        no_of_retry = DB_CONN_RETRY
+        attempt = 1
         while True:
             try:
                 with engine.connect() as connection:
                     conn = connection.connection
                     cursor = conn.cursor()
 
-                    sql1 = "DELETE from dm.dm_compitemprops where compitemid in (select id from dm.dm_componentitem where compid = " + str(compid) + ")"
-                    sql2 = "DELETE from dm.dm_componentitem where compid=" + str(compid)
-                    rows_deleted = 0
-                    cursor.execute(sql1)
-                    cursor.execute(sql2)
-                    rows_deleted = cursor.rowcount
+                    sql1 = "DELETE from dm.dm_compitemprops where compitemid in (select id from dm.dm_componentitem where compid = %s)"
+                    sql2 = "DELETE from dm.dm_componentitem where compid=%s"
+                    params = tuple([compid])
+                    cursor.execute(sql1, params)
+                    cursor.execute(sql2, params)
                     # Commit the changes to the database
                     conn.commit()
 
                 # response.status_code = status.HTTP_200_OK
-                return {"message": 'component deleted succesfully'}
+                return {"message": "component deleted succesfully"}
 
             except (InterfaceError, OperationalError) as ex:
                 sleep_for = 0.2
                 if attempt < no_of_retry:
-                    logging.error(
-                        "Database connection error: {} - sleeping for {}s"
-                        " and will retry (attempt #{} of {})".format(
-                            ex, sleep_for, attempt, no_of_retry
-                        )
-                    )
-                    #200ms of sleep time in cons. retry calls
+                    logging.error("Database connection error: %s - sleeping for %d seconds and will retry (attempt #%d of %d)", ex, sleep_for, attempt, no_of_retry)
+                    # 200ms of sleep time in cons. retry calls
                     sleep(sleep_for)
                     attempt += 1
                     continue
@@ -352,29 +353,28 @@ async def delete_compitem(request: Request, compid: int):
         # conn.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
-@app.put("/msapi/compitem")
-async def update_compitem(request: Request, compitemList: List[CompItemModel]):
 
+@app.put("/msapi/compitem")
+async def update_compitem(request: Request, compitem_list: list[CompItemModel]):
     try:
-        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies)
-        if (result is None):
+        result = requests.get(validateuser_url + "/msapi/validateuser", cookies=request.cookies, timeout=5)
+        if result is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed")
 
-        if (result.status_code != status.HTTP_200_OK):
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
+        if result.status_code != status.HTTP_200_OK:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed status_code=" + str(result.status_code))
     except Exception as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization Failed:" + str(err)) from None
 
     try:
-
         data_list = []
-        for col in compitemList:
+        for col in compitem_list:
             row = (col.compid, col.status, col.buildid, col.buildurl, col.dockersha, col.dockertag, col.gitcommit, col.gitrepo, col.giturl, col.id)  # this will be changed
             data_list.append(row)
 
-        #Retry logic for failed query
-        no_of_retry = db_conn_retry
-        attempt = 1;
+        # Retry logic for failed query
+        no_of_retry = DB_CONN_RETRY
+        attempt = 1
         while True:
             try:
                 with engine.connect() as connection:
@@ -382,8 +382,8 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
                     cursor = conn.cursor()
                     # # execute the INSERT statement
                     # records_list_template = ','.join(['%s'] * len(data_list))
-                    sqlstmt = 'UPDATE dm.dm_componentitem set compid=%s, status=%s, buildid=%s, buildurl=%s, dockersha=%s, dockertag=%s, gitcommit=%s, gitrepo=%s, giturl=%s \
-                    WHERE id = %s'
+                    sqlstmt = "UPDATE dm.dm_componentitem set compid=%s, status=%s, buildid=%s, buildurl=%s, dockersha=%s, dockertag=%s, gitcommit=%s, gitrepo=%s, giturl=%s \
+                    WHERE id = %s"
                     cursor.executemany(sqlstmt, data_list)
                     # commit the changes to the database
                     rows_inserted = cursor.rowcount
@@ -391,20 +391,15 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
                     conn.commit()
 
                 if rows_inserted > 0:
-                    return {"message": 'components updated succesfully'}
+                    return {"message": "components updated succesfully"}
 
-                return {"message": 'components not updated'}
+                return {"message": "components not updated"}
 
             except (InterfaceError, OperationalError) as ex:
                 if attempt < no_of_retry:
                     sleep_for = 0.2
-                    logging.error(
-                        "Database connection error: {} - sleeping for {}s"
-                        " and will retry (attempt #{} of {})".format(
-                            ex, sleep_for, attempt, no_of_retry
-                        )
-                    )
-                    #200ms of sleep time in cons. retry calls
+                    logging.error("Database connection error: %s - sleeping for %d seconds and will retry (attempt #%d of %d)", ex, sleep_for, attempt, no_of_retry)
+                    # 200ms of sleep time in cons. retry calls
                     sleep(sleep_for)
                     attempt += 1
                     continue
@@ -415,5 +410,6 @@ async def update_compitem(request: Request, compitemList: List[CompItemModel]):
         print(err)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(err)) from None
 
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5001)
+    uvicorn.run(app, port=5001)

@@ -1,37 +1,49 @@
 # ortelius-ms-compitem-crud
-Repo for base service catalog data microservice
 
-### API LIST
-Four types of APIs are supported at the moment.
+![Release](https://img.shields.io/github/v/release/ortelius/ms-compitem-crud?sort=semver)
+![license](https://img.shields.io/github/license/ortelius/ms-compitem-crud)
 
-#### Add list of component item
+![Build](https://img.shields.io/github/actions/workflow/status/ortelius/ms-compitem-crud/build-push-chart.yml)
+[![MegaLinter](https://github.com/ortelius/ms-compitem-crud/workflows/MegaLinter/badge.svg?branch=main)](https://github.com/ortelius/ms-compitem-crud/actions?query=workflow%3AMegaLinter+branch%3Amain)
+![CodeQL](https://github.com/ortelius/ms-compitem-crud/workflows/CodeQL/badge.svg)
 
-# Sample call
+![Discord](https://img.shields.io/discord/722468819091849316)
+
+
+Component Details Microservice - CRUD
+
+## API LIST
+
+Three types of APIs are supported at the moment.
+
+### Add list of component item
+
+```bash
 curl localhost:5000/msapi/compitem?comp_id=255
-[{"id": 361, "compid": 255, "buildid": "", "buildurl": "", "dockersha": "", "dockertag": "", "gitcommit": "", "gitrepo": "", "giturl": ""}, {"id": 8000, "compid": 255, "buildid": "test", "buildurl": "test", "dockersha": "test", "dockertag": "test", "gitcommit": "test", "gitrepo": "test", "giturl": "test"}, {"id": 8001, "compid": 255, "buildid": "test", "buildurl": "test", "dockersha": "test", "dockertag": "test", "gitcommit": "test", "gitrepo": "test", "giturl": "test"}]
+```
 
+Returns:
 
-#### Delete list of component item
+```json
+[{"id": 361, "compid": 255, "buildid": "", "buildurl": "", "dockersha": "", "dockertag": "", "gitcommit": "", "gitrepo": "", "giturl": ""},
+{"id": 8000, "compid": 255, "buildid": "test", "buildurl": "test", "dockersha": "test", "dockertag": "test", "gitcommit": "test", "gitrepo": "test", "giturl": "test"},
+{"id": 8001, "compid": 255, "buildid": "test", "buildurl": "test", "dockersha": "test", "dockertag": "test", "gitcommit": "test", "gitrepo": "test", "giturl": "test"}]
+```
 
-# Sample call
+### Delete list of component item
 
+```bash
 curl -X DELETE localhost:5000/msapi/compitem?comp_id=339
+```
 
-#### Get list of component item
+### Get list of component item
 
-# Sample call
-
+```bash
 curl localhost:5000/msapi/compitem?comp_id=106
+```
 
-#### Update list of component item
+## Run the app
 
-# Sample call
-
-in progress
-
-### Run the app
-
-To run the app locally write \
 `$ python main.py`
 
 ## Fixed CVEs
