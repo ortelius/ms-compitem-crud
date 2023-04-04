@@ -1,117 +1,260 @@
+---
 name: Build/Push Image and Release Charts
 
-#force build
-
 on:
+  pull_request:
+    paths-ignore:
+      - "chart/**/Chart.yaml"
+      - "chart/**/values.yaml"
   push:
     branches:
       - main
     paths-ignore:
-      - "chart/ms-compitem-crud/Chart.yaml"
-      - "chart/ms-compitem-crud/values.yaml"
+      - "chart/**/Chart.yaml"
+      - "chart/**/values.yaml"
+
+permissions: read-all
+
 jobs:
-  release:
+  setenv:
     runs-on: ubuntu-latest
-    env:
-      DHURL: https://console.deployhub.com
-      DHUSER: ${{ secrets.DHUSER }}
-      DHPASS: ${{ secrets.DHPASS }}
-      REGISTRY: quay.io
-      COMPNAME: ${{ github.event.repository.name }}
+
+    outputs:
+      short_sha: ${{ steps.env.outputs.short_sha }}
+      chart_version: ${{ steps.env.outputs.chart_version }}
+      image_version: ${{ steps.env.outputs.image_version }}
+      image_tag: ${{ steps.env.outputs.image_tag }}
+      image_repo_tag: ${{ steps.env.outputs.image_repo_tag }}
+      image_repository: ${{ steps.env.outputs.image_repository }}
+      registry: ${{ steps.env.outputs.registry }}
+      branch: ${{ steps.env.outputs.branch }}
+      compname: ${{ steps.env.outputs.compname }}
+      dhurl: ${{ steps.env.outputs.dhurl }}
+      gh_handle: ${{ steps.env.outputs.gh_handle }}
+
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1f99358870fe1c846a3ccba386cc2b2246836776 # v2.2.1
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
-          fetch-depth: 2
+          fetch-depth: 1
 
-      - name: Set Convenience Env Vars
+      - name: Export env
         id: env
+        env:
+          DHURL: https://console.deployhub.com
+          REGISTRY: quay.io
+          BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
-          echo "CHART_VERSION=10.0.${{ github.run_number }}" >> $GITHUB_ENV
-          echo "IMAGE_VERSION=10.0.${{ github.run_number }}-g$(echo ${{ github.sha }} | cut -c 1-6)" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ github.head_ref || github.ref_name }}-v10.0.${{ github.run_number }}-g$(echo ${{ github.sha }} | cut -c 1-6)" >> $GITHUB_ENV
+          BRANCH=$(echo "${{ env.BRANCH }}" | cut -d'/' -f1)
+          BASE_VERSION=$(curl -s "https://ortelius.github.io/${{ github.event.repository.name }}/index.yaml" | grep version: | awk '{print $2}' | cut -f1-2 -d. | sort -u -r --version-sort | head -1)
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c 1-6)
+          {
+           echo "dhurl=${{ env.DHURL }}"
+           echo "branch=${BRANCH}"
+           echo "chart_version=${BASE_VERSION}.${{ github.run_number }}"
+           echo "compname=${{ github.event.repository.name }}"
+           echo "image_repo_tag=${{ env.REGISTRY }}/${{ github.repository }}:${BRANCH}-v${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
+           echo "image_repository=${{ env.REGISTRY }}/${{ github.repository }}"
+           echo "image_tag=${BRANCH}-v${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
+           echo "image_version=${BASE_VERSION}.${{ github.run_number }}-g${SHORT_SHA}"
+           echo "registry=${{ env.REGISTRY }}"
+           echo "short_sha=${SHORT_SHA}"
+           echo "gh_handle=$GITHUB_ACTOR"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Configure Git
-        id: git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+  release:
+    runs-on: ubuntu-latest
+    needs: setenv
+
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1f99358870fe1c846a3ccba386cc2b2246836776 # v2.2.1
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Login to Quay
+        if: ${{ github.repository_owner == 'ortelius' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         id: login
-        uses: docker/login-action@v2
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # v2.1.0
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ${{ needs.setenv.outputs.registry }}
           username: ${{ secrets.QUAY_USERID }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
       - name: Build and Push Docker Image
+        if: ${{ github.repository_owner == 'ortelius' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         id: build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
         with:
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.IMAGE_TAG }}
+          tags: ${{ needs.setenv.outputs.image_repo_tag }}
+
+      - name: Build Docker Image
+        if: ${{ !(github.repository_owner == 'ortelius' && github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+        id: build_only
+        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
+        with:
+          tags: ${{ needs.setenv.outputs.image_repo_tag }}
+
+  trivy:
+    runs-on: ubuntu-latest
+    needs: [setenv, release]
+
+    permissions:
+      security-events: write
+      statuses: write
+
+    if: ${{ github.repository_owner == 'ortelius' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1f99358870fe1c846a3ccba386cc2b2246836776 # v2.2.1
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@1f0aa582c8c8f5f7639610d6d38baddfea4fdcee # master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.IMAGE_TAG }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          image-ref: ${{ needs.setenv.outputs.image_repo_tag }}
+          format: "sarif"
+          output: "trivy-results.sarif"
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@168b99b3c22180941ae7dbdd5f5c9678ede476ba # v2.2.7
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
+
+  helm:
+    runs-on: ubuntu-latest
+    needs: [setenv, release]
+
+    permissions:
+      security-events: write
+      statuses: write
+      contents: write
+
+    if: ${{ github.repository_owner == 'ortelius' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1f99358870fe1c846a3ccba386cc2b2246836776 # v2.2.1
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+
+      - name: Configure Git
+        id: git
+        run: |
+          git config user.name "${{ needs.setenv.outputs.gh_handle }}"
+          git config user.email "${{ needs.setenv.outputs.gh_handle }}@users.noreply.github.com"
 
       - name: Update Values and Chart
         id: chart
-        run: |
-            sudo go install github.com/mikefarah/yq/v4@latest
-            yq e '.image.repository |= "${{ env.REGISTRY }}/${{ github.repository }}"' -i chart/${{ github.event.repository.name }}/values.yaml
-            yq e '.image.tag |= "${{ env.IMAGE_TAG }}"' -i chart/${{ github.event.repository.name }}/values.yaml
-            yq e '.image.sha |= "${{ steps.build.outputs.digest }}"' -i chart/${{ github.event.repository.name }}/values.yaml
-            yq e '.version |= "${{ env.CHART_VERSION }}"' -i chart/${{ github.event.repository.name }}/Chart.yaml
-            yq e '.appVersion |= "${{ env.CHART_VERSION }}"' -i chart/${{ github.event.repository.name }}/Chart.yaml
-            echo "DIGEST=${{ steps.build.outputs.digest }}" >> $GITHUB_ENV
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: fjogeleit/yaml-update-action@d98ee6a10a971effea75480e3f315e4dacc89a23 # main
         with:
-          commit_message: Update chart and values
-
-      - name: Generate SBOM
-        id: sbom
-        run: |
-            curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b .
-            ./syft packages ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.IMAGE_TAG }} --scope all-layers -o cyclonedx-json > cyclonedx.json
-            cat cyclonedx.json
-
-      - name: Update Compnent
-        id: updatecomp
-        run: |
-          pip install ortelius-cli
-          dh envscript --envvars component.toml --envvars_sh env.sh
-          source env.sh
-          dh updatecomp --rsp component.toml --deppkg cyclonedx@cyclonedx.json
-
+          commitChange: false
+          changes: |
+            {
+              "chart/${{ github.event.repository.name }}/values.yaml":
+              {
+                "image.repository": "${{ needs.setenv.outputs.image_repository }}",
+                "image.tag": "${{ needs.setenv.outputs.image_tag }}",
+                "image.sha": "${{ needs.release.outputs.digest }}"
+              },
+              "chart/${{ needs.setenv.outputs.compname }}/Chart.yaml":
+              {
+                "version": "${{ needs.setenv.outputs.chart_version }}",
+                "appVersion": "${{ needs.setenv.outputs.chart_version }}"
+              }
+            }
       - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
         with:
           version: v3.10.0
 
+      - name: Prepare GPG key
+        run: |
+          gpg_dir=.cr-gpg
+          mkdir "$gpg_dir"
+          keyring="$gpg_dir/secring.gpg"
+          base64 -d <<< "$GPG_KEYRING_BASE64" > "$keyring"
+          passphrase_file="$gpg_dir/passphrase"
+          echo "$GPG_PASSPHRASE" > "$passphrase_file"
+          echo "CR_PASSPHRASE_FILE=$passphrase_file" >> "$GITHUB_ENV"
+          echo "CR_KEYRING=$keyring" >> "$GITHUB_ENV"
+        env:
+          GPG_KEYRING_BASE64: "${{ secrets.GPG_KEYRING_BASE64 }}"
+          GPG_PASSPHRASE: "${{ secrets.GPG_PASSPHRASE }}"
+
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.4.1
+        uses: helm/chart-releaser-action@98bccfd32b0f76149d188912ac8e45ddd3f8695f # v1.4.1
         with:
           charts_dir: chart
+          config: .cr.yaml
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: "${{ secrets.HELM_INDEXER_TOKEN }}"
 
       - name: Trigger Rebuild of Main Chart
-        uses: benc-uk/workflow-dispatch@v1
+        uses: benc-uk/workflow-dispatch@798e70c97009500150087d30d9f11c5444830385 # v1.2.2
         with:
           workflow: generate-main-chart.yml
           repo: ortelius/ortelius-charts
           token: ${{ secrets.HELM_INDEXER_TOKEN }}
+
+  sbom:
+    runs-on: ubuntu-latest
+    needs: [setenv, release]
+
+    if: ${{ github.repository_owner == 'ortelius' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1f99358870fe1c846a3ccba386cc2b2246836776 # v2.2.1
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@07978da4bdb4faa726e52dfc6b1bed63d4b56479 # v0.13.3
+        id: sbom
+        with:
+          format: cyclonedx-json
+          output-file: /tmp/cyclonedx.json
+          image: ${{ needs.setenv.outputs.image_repo_tag }}
+
+      - name: Update Compnent
+        id: updatecomp
+        env:
+          DHURL: ${{ needs.setenv.outputs.dhurl }}
+          DHUSER: ${{ secrets.DHUSER }}
+          DHPASS: ${{ secrets.DHPASS }}
+          GIT_BRANCH: ${{ needs.setenv.outputs.branch }}
+          CHART_VERSION: ${{ needs.setenv.outputs.chart_version }}
+          COMPNAME: ${{ needs.setenv.outputs.compname }}
+          DIGEST: ${{ needs.release.outputs.digest }}
+          IMAGE_REPO: ${{ needs.setenv.outputs.image_repository }}
+          IMAGE_REPO_TAG: ${{ needs.setenv.outputs.image_repo_tag }}
+          IMAGE_TAG: ${{ needs.setenv.outputs.image_tag }}
+          IMAGE_VERSION: ${{ needs.setenv.outputs.image_version }}
+          SHORT_SHA: ${{ needs.setenv.outputs.short_sha }}
+
+        run: |
+          pip install ortelius-cli
+          dh updatecomp --rsp component.toml --deppkg cyclonedx@/tmp/cyclonedx.json
