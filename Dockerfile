@@ -1,8 +1,11 @@
-FROM cgr.dev/chainguard/python:3.11.2-dev@sha256:90ed2f55062987609b2ee2682cfe2a9cf8e3a01fd1028d0559cd6023a2313d76 AS builder
+FROM cgr.dev/chainguard/python:3.11.2-dev@sha256:7b654572d3a8074ef72e7cd6165064c35b80e88e408cfb5e7981d94218aba697 AS builder
 COPY . /app
-RUN cd /app && pip install -r requirements.txt
+
+WORKDIR /app
+RUN python -m pip install --no-cache-dir -r requirements.txt --require-hashes --no-warn-script-location;
 
 FROM cgr.dev/chainguard/python:3.11.2@sha256:7a0724c1aa6d9a53b6719639a20fafdfe431ebe84fe0159519119c2b337ae455
+USER nonroot
 ENV DB_HOST localhost
 ENV DB_NAME postgres
 ENV DB_USER postgres
@@ -16,5 +19,7 @@ WORKDIR /app
 
 EXPOSE 8080
 ENV PATH=$PATH:/home/nonroot/.local/bin
+
+HEALTHCHECK CMD curl --fail http://localhost:8080/health || exit 1
 
 ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
