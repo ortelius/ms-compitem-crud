@@ -144,7 +144,7 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                     conn = connection.connection
                     cursor = conn.cursor()
 
-                    sqlstmt = """select a.compid, a.id, a.name, a.rollup, a.rollback, fulldomain(r.domainid, r.name) "repository", target "targetdirectory", a.xpos, a.ypos,
+                    sqlstmt = """select a.compid, a.id, a.name, a.rollup, a.rollback, dm.fulldomain(r.domainid, r.name) "repository", target "targetdirectory", a.xpos, a.ypos,
                                 kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
                                 gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
                                 chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone",
