@@ -163,51 +163,18 @@ jobs:
           git config user.name "${{ needs.setenv.outputs.gh_handle }}"
           git config user.email "${{ needs.setenv.outputs.gh_handle }}@users.noreply.github.com"
 
-      - name: Update Values and Chart
-        id: chart
-        uses: fjogeleit/yaml-update-action@d98ee6a10a971effea75480e3f315e4dacc89a23 # main
+      - name: Helm Chart Releaser
+        uses: ortelius/ms-cr-action@v1.0
         with:
-          commitChange: false
-          changes: |
-            {
-              "chart/${{ github.event.repository.name }}/values.yaml":
-              {
-                "image.repository": "${{ needs.setenv.outputs.image_repository }}",
-                "image.tag": "${{ needs.setenv.outputs.image_tag }}",
-                "image.sha": "${{ needs.release.outputs.digest }}"
-              },
-              "chart/${{ needs.setenv.outputs.compname }}/Chart.yaml":
-              {
-                "version": "${{ needs.setenv.outputs.chart_version }}",
-                "appVersion": "${{ needs.setenv.outputs.chart_version }}"
-              }
-            }
-      - name: Install Helm
-        uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # v3.5
-        with:
-          version: v3.10.0
-
-      - name: Prepare GPG key
-        run: |
-          gpg_dir=.cr-gpg
-          mkdir "$gpg_dir"
-          keyring="$gpg_dir/secring.gpg"
-          base64 -d <<< "$GPG_KEYRING_BASE64" > "$keyring"
-          passphrase_file="$gpg_dir/passphrase"
-          echo "$GPG_PASSPHRASE" > "$passphrase_file"
-          echo "CR_PASSPHRASE_FILE=$passphrase_file" >> "$GITHUB_ENV"
-          echo "CR_KEYRING=$keyring" >> "$GITHUB_ENV"
-        env:
-          GPG_KEYRING_BASE64: "${{ secrets.GPG_KEYRING_BASE64 }}"
-          GPG_PASSPHRASE: "${{ secrets.GPG_PASSPHRASE }}"
-
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@98bccfd32b0f76149d188912ac8e45ddd3f8695f # v1.4.1
-        with:
-          charts_dir: chart
-          config: .cr.yaml
-        env:
-          CR_TOKEN: "${{ secrets.HELM_INDEXER_TOKEN }}"
+          gpg_keyring_base64: ${{ secrets.GPG_KEYRING_BASE64 }}
+          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg_key: ${{ secrets.GPG_KEY }}
+          gh_token: ${{ secrets.HELM_INDEXER_TOKEN }}
+          chart: chart/${{ needs.setenv.outputs.compname }}
+          chart_version: ${{ needs.setenv.outputs.chart_version }}
+          image_repository: ${{ needs.setenv.outputs.image_repository }}
+          image_tag: ${{ needs.setenv.outputs.image_tag }}
+          image_digest: ${{ needs.release.outputs.digest }}
 
       - name: Trigger Rebuild of Main Chart
         uses: benc-uk/workflow-dispatch@798e70c97009500150087d30d9f11c5444830385 # v1.2.2
