@@ -164,7 +164,7 @@ jobs:
           git config user.email "${{ needs.setenv.outputs.gh_handle }}@users.noreply.github.com"
 
       - name: Helm Chart Releaser
-        uses: ortelius/ms-cr-action@v1.0
+        uses: ortelius/ms-cr-action@d9f0e8b64e305aebcb13c9b80091c4ebfdd4e658 # v1.0
         with:
           gpg_keyring_base64: ${{ secrets.GPG_KEYRING_BASE64 }}
           gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
