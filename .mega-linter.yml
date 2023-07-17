@@ -21,6 +21,6 @@ DISABLE:
 PRE_COMMANDS:
   - command: python -m pip install -r requirements.in
     cwd: "workspace"
-  - command: python -m pip install commentjson gitpython importlib-metadata jsonpickle multiprocessing_logging pychalk pygithub pytablewriter python-gitlab pyyaml regex terminaltables && python -m pip install -r $OLDPWD/requirements.in
+  - command: python -m pip install commentjson gitpython importlib-metadata jsonpickle multiprocessing_logging pychalk pygithub pytablewriter python-gitlab regex terminaltables && python -m pip install -r $OLDPWD/requirements.in
     venv: pylint
     cwd: "workspace"
