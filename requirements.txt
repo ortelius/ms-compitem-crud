@@ -413,11 +413,12 @@ typing-extensions==4.7.1 \
     #   pydantic
     #   pydantic-core
     #   sqlalchemy
+    #   uvicorn
 urllib3==2.0.3 \
     --hash=sha256:48e7fafa40319d358848e1bc6809b208340fafe2096f1725d05d67443d0483d1 \
     --hash=sha256:bee28b5e56addb8226c96f7f13ac28cb4c301dd5ea8a6ca179c0b9835e032825
     # via requests
-uvicorn==0.23.0 \
-    --hash=sha256:479599b2c0bb1b9b394c6d43901a1eb0c1ec72c7d237b5bafea23c5b2d4cdf10 \
-    --hash=sha256:d38ab90c0e2c6fe3a054cddeb962cfd5d0e0e6608eaaff4a01d5c36a67f3168c
+uvicorn==0.23.1 \
+    --hash=sha256:1d55d46b83ee4ce82b4e82f621f2050adb3eb7b5481c13f9af1744951cae2f1f \
+    --hash=sha256:da9b0c8443b2d7ee9db00a345f1eee6db7317432c9d4400f5049cc8d358383be
     # via -r requirements.in
