@@ -12,9 +12,9 @@ anyio==3.7.1 \
     --hash=sha256:44a3c9aba0f5defa43261a8b3efb97891f2bd7d804e0e1f56419befa1adfc780 \
     --hash=sha256:91dee416e570e92c64041bd18b900d1d6fa78dff7048769ce5ac5ddad004fbb5
     # via starlette
-certifi==2023.5.7 \
-    --hash=sha256:0f0d56dc5a6ad56fd4ba36484d6cc34451e1c6548c61daad8c320169f91eddc7 \
-    --hash=sha256:c6c2e98f5c7869efca1f8916fed228dd91539f9f1b444c314c06eef02980c716
+certifi==2023.7.22 \
+    --hash=sha256:539cc1d13202e33ca466e88b2807e29f4c13049d6d87031a3c110744495cb082 \
+    --hash=sha256:92d6037539857d8206b8f6ae472e8b77db8058fec5937a1ef3f54304089edbb9
     # via requests
 charset-normalizer==3.2.0 \
     --hash=sha256:04e57ab9fbf9607b77f7d057974694b4f6b142da9ed4a199859d9d4d5c63fe96 \
@@ -97,10 +97,6 @@ click==8.1.5 \
     --hash=sha256:4be4b1af8d665c6d942909916d31a213a106800c47d0eeba73d34da3cbc11367 \
     --hash=sha256:e576aa487d679441d7d30abb87e1b43d24fc53bffb8758443b1a9e1cee504548
     # via uvicorn
-exceptiongroup==1.1.2 \
-    --hash=sha256:12c3e887d6485d16943a309616de20ae5582633e0a2eda17f4e10fd61c1e8af5 \
-    --hash=sha256:e346e69d186172ca7cf029c8c1d16235aa0e04035e5750b4b95039e65204328f
-    # via anyio
 fastapi==0.100.0 \
     --hash=sha256:271662daf986da8fa98dc2b7c7f61c4abdfdccfb4786d79ed8b2878f172c6d5f \
     --hash=sha256:acb5f941ea8215663283c10018323ba7ea737c571b67fc7e88e9469c7eb1d12e
@@ -413,7 +409,6 @@ typing-extensions==4.7.1 \
     #   pydantic
     #   pydantic-core
     #   sqlalchemy
-    #   uvicorn
 urllib3==2.0.3 \
     --hash=sha256:48e7fafa40319d358848e1bc6809b208340fafe2096f1725d05d67443d0483d1 \
     --hash=sha256:bee28b5e56addb8226c96f7f13ac28cb4c301dd5ea8a6ca179c0b9835e032825
