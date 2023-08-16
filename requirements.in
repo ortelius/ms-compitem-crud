@@ -1,7 +1,7 @@
-fastapi==0.101.0
+fastapi==0.101.1
 psycopg2_binary==2.9.7
 pydantic==2.1.1
-SQLAlchemy==2.0.19
+SQLAlchemy==2.0.20
 uvicorn==0.23.2
 requests==2.31.0
 certifi==2023.7.22
