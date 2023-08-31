@@ -4,7 +4,10 @@
   "ignorePaths": ["chart/**"],
   "prHourlyLimit": 4,
   "pip_requirements": {
-    "fileMatch": ["requirements.txt", "requirements.in"]
+    "fileMatch": ["requirements.in"]
+  },
+  "pip-compile": {
+    "fileMatch": ["(^|/)requirements\\.in$"]
   },
   "extends": ["config:base", "group:all"],
   "docker": {
