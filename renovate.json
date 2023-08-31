@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "automergeSchedule": ["every hour"],
+  "ignorePaths": ["chart/**"],
+  "prHourlyLimit": 4,
+  "pip_requirements": {
+    "fileMatch": ["requirements.txt", "requirements.in"]
+  },
+  "extends": ["config:base", "group:all"],
+  "docker": {
+    "managerBranchPrefix": "docker-"
+  },
+  "python": {
+    "managerBranchPrefix": "python-"
+  },
+  "github-actions": {
+    "managerBranchPrefix": "github-"
+  },
+  "gomod": {
+    "managerBranchPrefix": "gomod-"
+  },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "autoApprove": true
+    }
+  ]
+}
