@@ -52,8 +52,8 @@ engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" 
 
 # health check endpoint
 class StatusMsg(BaseModel):
-    status: str
-    service_name: str
+    status: str = ""
+    service_name: str = ""
 
 
 @app.get("/health")
@@ -81,8 +81,8 @@ async def health(response: Response) -> StatusMsg:
 
 
 class CompItemModel(BaseModel):
-    compid: int
-    id: int
+    compid: int = 0
+    id: int = 0
     builddate: Optional[str] = None
     buildid: Optional[str] = None
     buildurl: Optional[str] = None
