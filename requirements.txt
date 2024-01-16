@@ -434,7 +434,7 @@ urllib3==2.0.7 \
     --hash=sha256:c97dfde1f7bd43a71c8d2a58e369e9b2bf692d1334ea9f9cae55add7d0dd0f84 \
     --hash=sha256:fdb6d215c776278489906c2f8916e6e7d4f5a9b602ccbcfdf7f016fc8da0596e
     # via requests
-uvicorn==0.25.0 \
-    --hash=sha256:6dddbad1d7ee0f5140aba5ec138ddc9612c5109399903828b4874c9937f009c2 \
-    --hash=sha256:ce107f5d9bd02b4636001a77a4e74aab5e1e2b146868ebbad565237145af444c
+uvicorn==0.26.0 \
+    --hash=sha256:48bfd350fce3c5c57af5fb4995fded8fb50da3b4feb543eb18ad7e0d54589602 \
+    --hash=sha256:cdb58ef6b8188c6c174994b2b1ba2150a9a8ae7ea5fb2f1b856b94a815d6071d
     # via -r requirements.in
