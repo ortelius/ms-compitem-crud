@@ -122,6 +122,38 @@ class CompItemModel(BaseModel):
     targetdirectory: Optional[str] = None
     xpos: Optional[int] = None
     ypos: Optional[int] = None
+    scorecardpinned: Optional[str] = None
+    scorecardscore: Optional[str] = None
+    binaryartifacts: Optional[str] = None
+    branchprotection: Optional[str] = None
+    ciibestpractices: Optional[str] = None
+    codereview: Optional[str] = None
+    dangerousworkflow: Optional[str] = None
+    fuzzing: Optional[str] = None
+    license: Optional[str] = None
+    maintained: Optional[str] = None
+    packaging: Optional[str] = None
+    pinneddependencies: Optional[str] = None
+    sast: Optional[str] = None
+    securitypolicy: Optional[str] = None
+    signedreleases: Optional[str] = None
+    tokenpermissions: Optional[str] = None
+    vulnerabilities: Optional[str] = None
+
+
+def formatScore(value):
+    if value is None:
+        return "0 / 10"
+
+    if isinstance(value, int):
+        return str(value) + " / 10"
+
+    if isinstance(value, float):
+        if value.is_integer():
+            return str(int(value)) + " / 10"
+        else:
+            return "{:.1f} / 10".format(value)
+    return value + " / 10"
 
 
 @app.get("/msapi/compitem")
@@ -151,7 +183,10 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                                 kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
                                 gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
                                 chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone",
-                                slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
+                                slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl,
+                                a.ScoreCardPinned, a.Score, a.Maintained, a.CodeReview, a.CIIBestPractices, a.License, a.SignedReleases,
+                                a.DangerousWorkflow, a.Packaging, a.TokenPermissions, a.BranchProtection, a.BinaryArtifacts, a.PinnedDependencies,
+                                a.SecurityPolicy, a.Fuzzing, a.SAST, a.Vulnerabilities
                                 from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c, dm.dm_repository r
                                 where a.compid = b.id and b.ownerid = c.id and a.repositoryid = r.id and a.id = %s
                             union
@@ -159,7 +194,10 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                                 kind, buildid, buildurl, chart, builddate, dockerrepo, dockersha, gitcommit,
                                 gitrepo, gittag, giturl, chartversion, chartnamespace, dockertag, chartrepo,
                                 chartrepourl, c.id "serviceownerid", c.realname "serviceowner", c.email "serviceowneremail", c.phone "serviceownerphone",
-                                slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl
+                                slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl,
+                                a.ScoreCardPinned, a.Score, a.Maintained, a.CodeReview, a.CIIBestPractices, a.License, a.SignedReleases,
+                                a.DangerousWorkflow, a.Packaging, a.TokenPermissions, a.BranchProtection, a.BinaryArtifacts, a.PinnedDependencies,
+                                a.SecurityPolicy, a.Fuzzing, a.SAST, a.Vulnerabilities
                                 from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c
                                 where a.compid = b.id and b.ownerid = c.id and a.repositoryid is null and a.id = %s"""
 
@@ -193,7 +231,7 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                             cim.xpos = row[7]
                             cim.ypos = row[8]
                             cim.kind = row[9]
-                            cim.buildid = row[10]
+                            cim.buildid = str(row[10])
                             cim.buildurl = row[11]
                             cim.chart = row[12]
                             cim.builddate = row[13]
@@ -208,7 +246,7 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                             cim.dockertag = row[22]
                             cim.chartrepo = row[23]
                             cim.chartrepourl = row[24]
-                            cim.serviceownerid = row[25]
+                            cim.serviceownerid = str(row[25])
                             cim.serviceowner = row[26]
                             cim.serviceowneremail = row[27]
                             cim.serviceownerphone = row[28]
@@ -217,6 +255,24 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                             cim.hipchatchannel = row[31]
                             cim.pagerdutyurl = row[32]
                             cim.pagerdutybusinessurl = row[33]
+                            cim.scorecardpinned = str(row[34])
+                            cim.scorecardscore = formatScore(row[35])
+                            cim.maintained = formatScore(row[36])
+                            cim.codereview = formatScore(row[37])
+                            cim.ciibestpractices = formatScore(row[38])
+                            cim.license = formatScore(row[39])
+                            cim.signedreleases = formatScore(row[40])
+                            cim.dangerousworkflow = formatScore(row[41])
+                            cim.packaging = formatScore(row[42])
+                            cim.tokenpermissions = formatScore(row[43])
+                            cim.branchprotection = formatScore(row[44])
+                            cim.binaryartifacts = formatScore(row[45])
+                            cim.pinneddependencies = formatScore(row[46])
+                            cim.securitypolicy = formatScore(row[47])
+                            cim.fuzzing = formatScore(row[48])
+                            cim.sast = formatScore(row[49])
+                            cim.vulnerabilities = formatScore(row[50])
+
                             compitem_list.append(cim)
                     cursor.close()
                     conn.close()
