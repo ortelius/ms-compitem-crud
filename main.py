@@ -143,17 +143,17 @@ class CompItemModel(BaseModel):
 
 def formatScore(value):
     if value is None:
-        return "0 / 10"
+        return "0"
 
     if isinstance(value, int):
-        return str(value) + " / 10"
+        return str(value)
 
     if isinstance(value, float):
         if value.is_integer():
-            return str(int(value)) + " / 10"
+            return str(int(value))
         else:
-            return "{:.1f} / 10".format(value)
-    return value + " / 10"
+            return "{:.1f}".format(value)
+    return value
 
 
 @app.get("/msapi/compitem")
