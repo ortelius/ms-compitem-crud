@@ -1,7 +1,7 @@
 # ortelius-ms-compitem-crud
 
 ![Release](https://img.shields.io/github/v/release/ortelius/ms-compitem-crud?sort=semver)
-![license](https://img.shields.io/github/license/ortelius/ms-compitem-crud)
+![license](https://img.shields.io/github/license/ortelius/.github)
 
 ![Build](https://img.shields.io/github/actions/workflow/status/ortelius/ms-compitem-crud/build-push-chart.yml)
 [![MegaLinter](https://github.com/ortelius/ms-compitem-crud/workflows/MegaLinter/badge.svg?branch=main)](https://github.com/ortelius/ms-compitem-crud/actions?query=workflow%3AMegaLinter+branch%3Amain)
@@ -40,10 +40,10 @@ ortelius-ms-compitem-crud
 
 ### [GET]/health
 
-- Summary  
+- Summary
 Health
 
-- Description  
+- Description
 This health check end point used by Kubernetes
 
 #### Responses
@@ -63,7 +63,7 @@ This health check end point used by Kubernetes
 
 ### [GET]/msapi/compitem
 
-- Summary  
+- Summary
 Get Compitem
 
 #### Parameters(Query)
@@ -163,7 +163,7 @@ comptype?: Partial(string) & Partial(null)
 
 ### [POST]/msapi/compitem
 
-- Summary  
+- Summary
 Create Compitem
 
 #### RequestBody
@@ -261,7 +261,7 @@ Create Compitem
 
 ### [DELETE]/msapi/compitem
 
-- Summary  
+- Summary
 Delete Compitem
 
 #### Parameters(Query)
@@ -298,7 +298,7 @@ compid: integer
 
 ### [PUT]/msapi/compitem
 
-- Summary  
+- Summary
 Update Compitem
 
 #### RequestBody
