@@ -109,6 +109,7 @@ class CompItemModel(BaseModel):
     pagerdutybusinessurl: Optional[str] = None
     pagerdutyurl: Optional[str] = None
     predecessorid: Optional[int] = None
+    purl: Optional[str] = None
     repository: Optional[str] = None
     rollback: Optional[int] = None
     rollup: Optional[int] = None
@@ -186,7 +187,7 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                                 slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl,
                                 a.ScoreCardPinned, a.Score, a.Maintained, a.CodeReview, a.CIIBestPractices, a.License, a.SignedReleases,
                                 a.DangerousWorkflow, a.Packaging, a.TokenPermissions, a.BranchProtection, a.BinaryArtifacts, a.PinnedDependencies,
-                                a.SecurityPolicy, a.Fuzzing, a.SAST, a.Vulnerabilities
+                                a.SecurityPolicy, a.Fuzzing, a.SAST, a.Vulnerabilities, a.purl
                                 from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c, dm.dm_repository r
                                 where a.compid = b.id and b.ownerid = c.id and a.repositoryid = r.id and a.id = %s
                             union
@@ -197,7 +198,7 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                                 slackchannel, discordchannel, hipchatchannel, pagerdutyurl, pagerdutybusinessurl,
                                 a.ScoreCardPinned, a.Score, a.Maintained, a.CodeReview, a.CIIBestPractices, a.License, a.SignedReleases,
                                 a.DangerousWorkflow, a.Packaging, a.TokenPermissions, a.BranchProtection, a.BinaryArtifacts, a.PinnedDependencies,
-                                a.SecurityPolicy, a.Fuzzing, a.SAST, a.Vulnerabilities
+                                a.SecurityPolicy, a.Fuzzing, a.SAST, a.Vulnerabilities, a.purl
                                 from dm.dm_componentitem a, dm.dm_component b, dm.dm_user c
                                 where a.compid = b.id and b.ownerid = c.id and a.repositoryid is null and a.id = %s"""
 
@@ -272,6 +273,7 @@ async def get_compitem(request: Request, compitemid: int, comptype: Optional[str
                             cim.fuzzing = formatScore(row[48])
                             cim.sast = formatScore(row[49])
                             cim.vulnerabilities = formatScore(row[50])
+                            cim.purl = row[51]
 
                             compitem_list.append(cim)
                     cursor.close()
