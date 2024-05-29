@@ -3,6 +3,6 @@ psycopg2_binary==2.9.9
 pydantic==2.7.2
 SQLAlchemy==2.0.30
 uvicorn==0.30.0
-requests==2.32.2
+requests==2.32.3
 certifi==2024.2.2
 idna==3.7
