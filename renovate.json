@@ -19,10 +19,6 @@
       "matchPackagePatterns": [".*"],
       "automerge": true,
       "autoApprove": true
-    },
-    {
-      "matchPackageNames": ["pydantic-core"],
-      "allowedVersions": "2.18.4"
     }
   ],
   "separateMajorMinor": false,
