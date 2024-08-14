@@ -14,6 +14,12 @@
   },
   "packageRules": [
     {
+      "postUpgradeTasks": {
+        "commands": [
+          "pip-compile --upgrade-package starlette==0.37.2"
+        ],
+        "fileFilters": ["requirements.txt"]
+      },
       "groupName": "all dependencies",
       "groupSlug": "all",
       "matchPackagePatterns": [".*"],
