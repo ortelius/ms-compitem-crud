@@ -6,3 +6,4 @@ uvicorn==0.30.6
 requests==2.32.3
 certifi==2024.7.4
 idna==3.7
+starlette==0.37.2
