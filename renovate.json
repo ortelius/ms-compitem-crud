@@ -4,9 +4,6 @@
   "ignorePaths": ["chart/**"],
   "schedule": ["every 1 hours every weekday"],
   "prHourlyLimit": 4,
-  "pip_requirements": {
-    "fileMatch": ["(^|/)requirements\\.in$"]
-  },
   "groupName": "all dependencies",
   "groupSlug": "all",
   "lockFileMaintenance": {
@@ -19,12 +16,11 @@
       "matchPackagePatterns": [".*"],
       "automerge": true,
       "autoApprove": true
-    },
-    {
-      "matchPackageNames": ["starlette"],
-      "enabled": false
     }
   ],
   "separateMajorMinor": false,
-  "pinDigests": true
+  "pinDigests": true,
+  "poetry": {
+    "enabled": true
+  }
 }
