@@ -14,7 +14,7 @@ pydantic = "2.8.2"
 sqlalchemy = "2.0.32"
 uvicorn = "0.30.6"
 requests = "2.32.3"
-certifi = "2024.7.4"
+certifi = "2024.8.30"
 idna = "3.8"
 starlette = "0.38.2"
 
