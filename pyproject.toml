@@ -8,9 +8,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "0.112.3"
+fastapi = "0.113.0"
 psycopg2-binary = "2.9.9"
-pydantic = "2.8.2"
+pydantic = "2.9.0"
 sqlalchemy = "2.0.34"
 uvicorn = "0.30.6"
 requests = "2.32.3"
