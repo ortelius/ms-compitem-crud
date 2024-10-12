@@ -8,15 +8,15 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "0.115.0"
+fastapi = "0.115.2"
 psycopg2-binary = "2.9.9"
 pydantic = "2.9.2"
 sqlalchemy = "2.0.35"
-uvicorn = "0.30.6"
+uvicorn = "0.31.1"
 requests = "2.32.3"
 certifi = "2024.8.30"
 idna = "3.10"
-starlette = "0.38.6"
+starlette = "0.39.2"
 
 
 [build-system]
