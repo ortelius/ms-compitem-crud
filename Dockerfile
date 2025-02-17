@@ -12,11 +12,11 @@ RUN poetry install --no-root;
 
 FROM cgr.dev/chainguard/python:latest@sha256:2d14d0505ffe2d03b1cef2675dec60b3d1da3576732a127249058655cecf64dc
 USER nonroot
-ENV DB_HOST localhost
-ENV DB_NAME postgres
-ENV DB_USER postgres
-ENV DB_PASS postgres
-ENV DB_PORT 5432
+ENV DB_HOST=localhost
+ENV DB_NAME=postgres
+ENV DB_USER=postgres
+ENV DB_PASS=postgres
+ENV DB_PORT=5432
 
 COPY --from=builder /app /app
 COPY --from=builder /home/nonroot /home/nonroot
