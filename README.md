@@ -17,22 +17,22 @@ ortelius-ms-compitem-crud
 
 ## Path Table
 
-| Method | Path                                    | Description     |
-|--------|-----------------------------------------|-----------------|
-| GET    | [/health](#gethealth)                   | Health          |
-| GET    | [/msapi/compitem](#getmsapicompitem)    | Get Compitem    |
-| POST   | [/msapi/compitem](#postmsapicompitem)   | Create Compitem |
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | [/health](#gethealth) | Health |
+| GET | [/msapi/compitem](#getmsapicompitem) | Get Compitem |
+| POST | [/msapi/compitem](#postmsapicompitem) | Create Compitem |
 | DELETE | [/msapi/compitem](#deletemsapicompitem) | Delete Compitem |
-| PUT    | [/msapi/compitem](#putmsapicompitem)    | Update Compitem |
+| PUT | [/msapi/compitem](#putmsapicompitem) | Update Compitem |
 
 ## Reference Table
 
-| Name                | Path                                                                              | Description |
-|---------------------|-----------------------------------------------------------------------------------|-------------|
-| CompItemModel       | [#/components/schemas/CompItemModel](#componentsschemascompitemmodel)             |             |
-| HTTPValidationError | [#/components/schemas/HTTPValidationError](#componentsschemashttpvalidationerror) |             |
-| StatusMsg           | [#/components/schemas/StatusMsg](#componentsschemasstatusmsg)                     |             |
-| ValidationError     | [#/components/schemas/ValidationError](#componentsschemasvalidationerror)         |             |
+| Name | Path | Description |
+| --- | --- | --- |
+| CompItemModel | [#/components/schemas/CompItemModel](#componentsschemascompitemmodel) |  |
+| HTTPValidationError | [#/components/schemas/HTTPValidationError](#componentsschemashttpvalidationerror) |  |
+| StatusMsg | [#/components/schemas/StatusMsg](#componentsschemasstatusmsg) |  |
+| ValidationError | [#/components/schemas/ValidationError](#componentsschemasvalidationerror) |  |
 
 ## Path Details
 
@@ -40,10 +40,10 @@ ortelius-ms-compitem-crud
 
 ### [GET]/health
 
-- Summary
+- Summary  
 Health
 
-- Description
+- Description  
 This health check end point used by Kubernetes
 
 #### Responses
@@ -63,7 +63,7 @@ This health check end point used by Kubernetes
 
 ### [GET]/msapi/compitem
 
-- Summary
+- Summary  
 Get Compitem
 
 #### Parameters(Query)
@@ -164,7 +164,7 @@ comptype?: Partial(string) & Partial(null)
 
 ### [POST]/msapi/compitem
 
-- Summary
+- Summary  
 Create Compitem
 
 #### RequestBody
@@ -263,7 +263,7 @@ Create Compitem
 
 ### [DELETE]/msapi/compitem
 
-- Summary
+- Summary  
 Delete Compitem
 
 #### Parameters(Query)
@@ -300,7 +300,7 @@ compid: integer
 
 ### [PUT]/msapi/compitem
 
-- Summary
+- Summary  
 Update Compitem
 
 #### RequestBody
