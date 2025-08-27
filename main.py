@@ -44,8 +44,25 @@ validateuser_url = os.getenv("VALIDATEUSER_URL", "")
 
 if len(validateuser_url) == 0:
     validateuser_host = os.getenv("MS_VALIDATE_USER_SERVICE_HOST", "127.0.0.1")
-    host = socket.gethostbyaddr(validateuser_host)[0]
-    validateuser_url = "http://" + host + ":" + str(os.getenv("MS_VALIDATE_USER_SERVICE_PORT", "80"))
+
+    # Retry 60 times with a 5-second delay (60 * 5s = 300s = 5 minutes)
+    for attempt in range(60):
+        try:
+            host = socket.gethostbyaddr(validateuser_host)[0]
+            print(f"Successfully resolved host on attempt #{attempt + 1}.")
+            break  # Exit the loop on success
+        except socket.herror:
+            print("DNS lookup failed. Retrying in 5 seconds...")
+            sleep(5)
+    else:
+        # This 'else' block runs ONLY if the 'for' loop finishes without a 'break'.
+        # This means all 60 retries have failed.
+        raise TimeoutError(f"Could not resolve host '{validateuser_host}' after 5 minutes.")
+
+    # If the loop succeeded, 'host' is now defined.
+    port = os.getenv("MS_VALIDATE_USER_SERVICE_PORT", "80")
+    validateuser_url = f"http://{host}:{port}"
+    print(f"Service URL is ready: {validateuser_url}")
 
 engine = create_engine("postgresql+psycopg2://" + db_user + ":" + db_pass + "@" + db_host + ":" + db_port + "/" + db_name, pool_pre_ping=True)
 
