@@ -2,6 +2,17 @@ apiVersion: v1
 entries:
   ms-compitem-crud:
   - apiVersion: v2
+    appVersion: 10.0.1419
+    created: "2025-10-09T01:27:18.12224252Z"
+    description: Dependency Packages
+    digest: b3fbef0c6f149763755be056d8cf4d4713c351c56da7fd22f55536091e63dde2
+    icon: https://ortelius.github.io/ortelius-charts/logo.png
+    name: ms-compitem-crud
+    type: application
+    urls:
+    - https://github.com/ortelius/ms-compitem-crud/releases/download/ms-compitem-crud-10.0.1419/ms-compitem-crud-10.0.1419.tgz
+    version: 10.0.1419
+  - apiVersion: v2
     appVersion: 10.0.1417
     created: "2025-10-08T17:32:07.143372774Z"
     description: Dependency Packages
@@ -5330,4 +5341,4 @@ entries:
     urls:
     - https://github.com/ortelius/ortelius-ms-compitem-crud/releases/download/ms-compitem-crud-10.0.0-build.72/ms-compitem-crud-10.0.0-build.72.tgz
     version: 10.0.0-build.72
-generated: "2025-10-08T17:32:07.143065176Z"
+generated: "2025-10-09T01:27:18.121946056Z"
