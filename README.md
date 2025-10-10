@@ -43,6 +43,9 @@ ortelius-ms-compitem-crud
 - Summary  
 Health
 
+- Operation id  
+health_health_get
+
 - Description  
 This health check end point used by Kubernetes
 
@@ -52,7 +55,7 @@ This health check end point used by Kubernetes
 
 `application/json`
 
-```ts
+```typescript
 {
   status?: string
   service_name?: string
@@ -66,13 +69,16 @@ This health check end point used by Kubernetes
 - Summary  
 Get Compitem
 
+- Operation id  
+get_compitem_msapi_compitem_get
+
 #### Parameters(Query)
 
-```ts
+```typescript
 compitemid: integer
 ```
 
-```ts
+```typescript
 comptype?: Partial(string) & Partial(null)
 ```
 
@@ -82,7 +88,7 @@ comptype?: Partial(string) & Partial(null)
 
 `application/json`
 
-```ts
+```typescript
 {
   compid?: integer
   id?: integer
@@ -150,7 +156,7 @@ comptype?: Partial(string) & Partial(null)
 
 `application/json`
 
-```ts
+```typescript
 {
   detail: {
     loc?: Partial(string) & Partial(integer)[]
@@ -167,11 +173,14 @@ comptype?: Partial(string) & Partial(null)
 - Summary  
 Create Compitem
 
+- Operation id  
+create_compitem_msapi_compitem_post
+
 #### RequestBody
 
 - application/json
 
-```ts
+```typescript
 {
   compid?: integer
   id?: integer
@@ -241,7 +250,7 @@ Create Compitem
 
 `application/json`
 
-```ts
+```typescript
 {}
 ```
 
@@ -249,7 +258,7 @@ Create Compitem
 
 `application/json`
 
-```ts
+```typescript
 {
   detail: {
     loc?: Partial(string) & Partial(integer)[]
@@ -266,9 +275,12 @@ Create Compitem
 - Summary  
 Delete Compitem
 
+- Operation id  
+delete_compitem_msapi_compitem_delete
+
 #### Parameters(Query)
 
-```ts
+```typescript
 compid: integer
 ```
 
@@ -278,7 +290,7 @@ compid: integer
 
 `application/json`
 
-```ts
+```typescript
 {}
 ```
 
@@ -286,7 +298,7 @@ compid: integer
 
 `application/json`
 
-```ts
+```typescript
 {
   detail: {
     loc?: Partial(string) & Partial(integer)[]
@@ -303,11 +315,14 @@ compid: integer
 - Summary  
 Update Compitem
 
+- Operation id  
+update_compitem_msapi_compitem_put
+
 #### RequestBody
 
 - application/json
 
-```ts
+```typescript
 {
   compid?: integer
   id?: integer
@@ -377,7 +392,7 @@ Update Compitem
 
 `application/json`
 
-```ts
+```typescript
 {}
 ```
 
@@ -385,7 +400,7 @@ Update Compitem
 
 `application/json`
 
-```ts
+```typescript
 {
   detail: {
     loc?: Partial(string) & Partial(integer)[]
@@ -399,7 +414,7 @@ Update Compitem
 
 ### #/components/schemas/CompItemModel
 
-```ts
+```typescript
 {
   compid?: integer
   id?: integer
@@ -465,7 +480,7 @@ Update Compitem
 
 ### #/components/schemas/HTTPValidationError
 
-```ts
+```typescript
 {
   detail: {
     loc?: Partial(string) & Partial(integer)[]
@@ -477,7 +492,7 @@ Update Compitem
 
 ### #/components/schemas/StatusMsg
 
-```ts
+```typescript
 {
   status?: string
   service_name?: string
@@ -486,7 +501,7 @@ Update Compitem
 
 ### #/components/schemas/ValidationError
 
-```ts
+```typescript
 {
   loc?: Partial(string) & Partial(integer)[]
   msg: string
