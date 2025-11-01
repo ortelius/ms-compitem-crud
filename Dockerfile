@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/python:latest-dev@sha256:b766b72cc0d6ca2b80f19083ec13266c613d7013928887ac7551780545d90827 AS builder
+FROM cgr.dev/chainguard/python:latest-dev@sha256:3001eae1634ecc6292fa278b1f5042f939275224ece61240b3afde97721ff613 AS builder
 
 COPY . /app
 
@@ -10,7 +10,7 @@ RUN wget -q -O - https://install.python-poetry.org | python -
 RUN poetry install --no-root;
 
 
-FROM cgr.dev/chainguard/python:latest@sha256:aff11fb801109cee35db8f90412c78d6a242f4f105234764d33238553cc5d870
+FROM cgr.dev/chainguard/python:latest@sha256:383c8b591d31dd66d36fc0a565a24c7ce7ed04df63114f0074489bc13a8dc925
 USER nonroot
 ENV DB_HOST=localhost
 ENV DB_NAME=postgres
