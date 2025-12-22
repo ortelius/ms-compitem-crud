@@ -17,22 +17,22 @@ ortelius-ms-compitem-crud
 
 ## Path Table
 
-| Method | Path | Description |
-| --- | --- | --- |
-| GET | [/health](#gethealth) | Health |
-| GET | [/msapi/compitem](#getmsapicompitem) | Get Compitem |
-| POST | [/msapi/compitem](#postmsapicompitem) | Create Compitem |
+| Method | Path                                    | Description     |
+|--------|-----------------------------------------|-----------------|
+| GET    | [/health](#gethealth)                   | Health          |
+| GET    | [/msapi/compitem](#getmsapicompitem)    | Get Compitem    |
+| POST   | [/msapi/compitem](#postmsapicompitem)   | Create Compitem |
 | DELETE | [/msapi/compitem](#deletemsapicompitem) | Delete Compitem |
-| PUT | [/msapi/compitem](#putmsapicompitem) | Update Compitem |
+| PUT    | [/msapi/compitem](#putmsapicompitem)    | Update Compitem |
 
 ## Reference Table
 
-| Name | Path | Description |
-| --- | --- | --- |
-| CompItemModel | [#/components/schemas/CompItemModel](#componentsschemascompitemmodel) |  |
-| HTTPValidationError | [#/components/schemas/HTTPValidationError](#componentsschemashttpvalidationerror) |  |
-| StatusMsg | [#/components/schemas/StatusMsg](#componentsschemasstatusmsg) |  |
-| ValidationError | [#/components/schemas/ValidationError](#componentsschemasvalidationerror) |  |
+| Name                | Path                                                                              | Description |
+|---------------------|-----------------------------------------------------------------------------------|-------------|
+| CompItemModel       | [#/components/schemas/CompItemModel](#componentsschemascompitemmodel)             |             |
+| HTTPValidationError | [#/components/schemas/HTTPValidationError](#componentsschemashttpvalidationerror) |             |
+| StatusMsg           | [#/components/schemas/StatusMsg](#componentsschemasstatusmsg)                     |             |
+| ValidationError     | [#/components/schemas/ValidationError](#componentsschemasvalidationerror)         |             |
 
 ## Path Details
 
